@@ -4,6 +4,6 @@ FROM python:latest
 LABEL Maintainer="andrej"
 WORKDIR /usr/app/src
 
-COPY test-program.py ./
+COPY test_program.py ./
 
-CMD [ "python3", "./test-program.py" ]
+CMD [ "python3", "./test_program.py" ]
