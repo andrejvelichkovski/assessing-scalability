@@ -1,0 +1,9 @@
+#Deriving the latest base image
+FROM python:latest
+
+LABEL Maintainer="andrej"
+WORKDIR /usr/app/src
+
+COPY test-program.py ./
+
+CMD [ "python3", "./test-program.py" ]
