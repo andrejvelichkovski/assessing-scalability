@@ -1,3 +1,18 @@
+"""
+This CLI tool is used for benchmarking Docker performance on scale
+
+For given image name and container count (c) it launches c images
+
+Usage:
+
+python3 docker_micro_benchmark --containers X --image_name Y
+
+Optional flags:
+* --no_clean_flag: specifies to skip the closing of images after 
+all of them are launched. WARNING: This leaves c images hunging 
+around on the OS after this operation is performed
+"""
+
 import click
 
 from docker import APIClient
