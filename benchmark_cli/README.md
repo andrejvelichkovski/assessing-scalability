@@ -18,14 +18,16 @@ Before executing step 3, it is highly recommended to create a new virtual enviro
 2. Create a new virtual environment: `virtualenv <venv-name>`
 3. Activate the new virtual env: `. <venv-name>/bin/activate`
 
-## Using docker micro benchmark CLI
+## Using Spawner CLI
 
-The `docker_micro_benchmark.py` CLI automatically creates and starts Docker containers to benchmark various performances.
+The `spawner.py` CLI automatically creates and starts containers/VMs to make the process of benchmarking easier.
 
 Usage:
 ```
-python3 docker_micro_benchmark.py --containers X --image_name Y
+python3 spawner.py --instances X --name Y [command] [command specific options]
 ```
 
+### Docker Spawner
+
 Optional flags:
-* `--no_clean_flag` to skip the cleaning process at the end once all images are created
+* `--clean_flag` to skip the cleaning process at the end once all images are created
