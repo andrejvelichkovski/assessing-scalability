@@ -1,1 +1,2 @@
 microbenchmarks/unikraft/scripts/*
+**/__pycache__/
