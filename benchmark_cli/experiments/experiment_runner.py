@@ -1,0 +1,3 @@
+from experiments.docker_nginx_experiment import run_experiment
+
+run_experiment()
