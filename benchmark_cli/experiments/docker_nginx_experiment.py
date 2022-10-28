@@ -1,4 +1,3 @@
-import os
 import subprocess
 
 import time
@@ -14,11 +13,13 @@ log.basicConfig(
     format="%(levelname)s: %(message)s"
 )
 
+
 def run_wrk_benchmark(file_data, ip_address, port):
     subprocess.Popen(
         f"wrk -d 1m -c 30 -t 14 http://{ip_address}:{port} > {file_data}",
         shell=True
     )
+
 
 def run_docker_nginx_experiment(run_index):
     active_port = 8080

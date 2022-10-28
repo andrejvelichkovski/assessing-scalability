@@ -2,6 +2,7 @@
 # All other spawner commands belong to this group
 import click
 
+
 @click.group(help="CLI tool for spawning lightweight virtualization systems")
 @click.option(
     '-i', '--instances',
@@ -17,7 +18,7 @@ import click
 )
 @click.pass_context
 def spawner(ctx, instances, name):
-	ctx.ensure_object(dict)
+    ctx.ensure_object(dict)
 
-	ctx.obj['instances'] = instances
-	ctx.obj['name'] = name
+    ctx.obj['instances'] = instances
+    ctx.obj['name'] = name

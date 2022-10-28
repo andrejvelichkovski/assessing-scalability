@@ -4,6 +4,8 @@ import subprocess
 
 from helpers.unikraft_helpers import run_unikraft
 
+INSTANCES_PER_IP = 200
+
 log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
     format="%(levelname)s: %(message)s"
@@ -30,7 +32,6 @@ def unikraft_spawner(instances, name):
 
     log.warning(f"Running this command will create {instances} Unikraft VMs without cleaning them!")
 
-    INSTANCES_PER_IP = 200
     ips_required = (instances + INSTANCES_PER_IP - 1) // INSTANCES_PER_IP
 
     setup_network(ips_required)
@@ -52,7 +53,3 @@ def unikraft_spawner(instances, name):
             # Print benchmark progress
             if active_vms % (instances // 10) == 0:
                 log.info(f"Benchmark progress: { (active_vms // (instances // 10)) * 10 }%")
-
-
-if __name__ == '__main__':
-    unikraft_spawner()
