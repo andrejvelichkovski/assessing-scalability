@@ -1,12 +1,4 @@
-import click
-
-from docker import APIClient
-
 import logging as log
-import statistics
-import time
-
-import os
 
 import subprocess
 
@@ -16,6 +8,7 @@ log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
     format="%(levelname)s: %(message)s"
 )
+
 
 def setup_network(ips_required):
     subprocess.run("sudo ip link set dev virbr0 down", shell=True)
@@ -29,6 +22,7 @@ def setup_network(ips_required):
 
     subprocess.run("sudo ip link set dev virbr0 up", shell=True)
 
+
 def unikraft_spawner(instances, name):
     if instances % 10 != 0:
         log.error("Invalid Input: Please enter instances as number divisible by 10")
@@ -38,9 +32,6 @@ def unikraft_spawner(instances, name):
 
     INSTANCES_PER_IP = 200
     ips_required = (instances + INSTANCES_PER_IP - 1) // INSTANCES_PER_IP
-
-    log.info(os.getcwd())
-
 
     setup_network(ips_required)
     active_vms = 0
@@ -61,6 +52,7 @@ def unikraft_spawner(instances, name):
             # Print benchmark progress
             if active_vms % (instances // 10) == 0:
                 log.info(f"Benchmark progress: { (active_vms // (instances // 10)) * 10 }%")
+
 
 if __name__ == '__main__':
     unikraft_spawner()

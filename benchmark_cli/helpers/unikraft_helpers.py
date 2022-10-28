@@ -44,3 +44,7 @@ def run_unikraft(ip_address, instance_cnt, name):
         _run_nginx_instance(ip_address)
     elif name == "redis":
         _run_redis_instance(ip_address, instance_cnt)
+
+def clean_all_vms():
+    os.system("ps -ef | grep qemu-system-x86_64 | grep -o ^[a-z[:space:]]*[0-9]* | grep -o [0-9]* > kernels")
+    os.system("sudo kill `cat kernels`")
