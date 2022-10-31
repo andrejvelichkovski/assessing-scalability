@@ -6,7 +6,7 @@ from helpers.docker_helpers import create_container, start_container
 import logging as log
 
 EXPERIMENT_NAME = "d_ng_s"
-INSTANCES = 10
+INSTANCES = 50
 
 log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
@@ -32,7 +32,7 @@ def run_docker_nginx_experiment(run_index):
     time.sleep(2)
     log.info("Main container started. Starting first wrk benchmark")
 
-    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}-{run_index}-data-single.out", "localhost", 8080)
+    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", "localhost", 8080)
     time.sleep(100)
     log.info("Benchmark finished. Continuing!")
 
@@ -45,6 +45,6 @@ def run_docker_nginx_experiment(run_index):
         time.sleep(2)
         log.info(f"Started {INSTANCES} additional containers. Performing new benchmark now")
 
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}-{run_index}-data-{(i+1)*INSTANCES}.out", "localhost", 8080)
+        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*INSTANCES}.out", "localhost", 8080)
         time.sleep(100)
         log.info("Benchmark finished. Continuing!")

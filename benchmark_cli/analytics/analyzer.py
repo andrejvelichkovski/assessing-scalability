@@ -12,14 +12,28 @@ FILE_NAMES = {
         "data-200.out",
         "data-250.out",
     ],
-    "run": [
+    "d_ng_s": [
         "data-single.out",
+        "data-50.out",
         "data-100.out",
+        "data-150.out",
         "data-200.out",
-        "data-300.out",
-        "data-400.out",
-        "data-500.out",
+        "data-250.out",
     ],
+    "d_ng_p": [
+        "data-0.out",
+        "data-1.out",
+        "data-2.out",
+        "data-3.out",
+        "data-4.out",
+    ],
+    "uk_ng_p": [
+        "data-0.out",
+        "data-1.out",
+        "data-2.out",
+        "data-3.out",
+        "data-4.out",
+    ]
 }
 
 
@@ -32,7 +46,7 @@ def get_data(experiment_name, runs, path):
         current_stats = []
         for run in range(0, runs):
             current_stats.append(
-                get_wrk_benchmark_data(f"{path}/{experiment_name}-{run+1}-{file_name}")
+                get_wrk_benchmark_data(f"{path}/{run+1}-{file_name}")
             )
         all_stats.append(current_stats)
 
@@ -74,10 +88,10 @@ def make_plot(data, file_name):
 
     # Save the figure and show
     plt.tight_layout()
-    plt.savefig("bar_plot_with_error_bars.png")
+    plt.savefig(f"../figures/{file_name}")
     print("done")
 
 
 if __name__ == "__main__":
-    data = get_data("run", 5, "../benchmark-data")
-    make_plot(data, "../graphs")
+    data = get_data("d_ng_p", 1, "../benchmark-data/d_ng_p")
+    make_plot(data, "d_ng_p")
