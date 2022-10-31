@@ -65,12 +65,11 @@ def make_plot(data, file_name):
     std = np.std(data, axis=1)
 
     labels = [
-        'Single',
-        '50 instances',
-        '100 instances',
-        '150 instances',
-        '200 instances',
-        '250 instances'
+        'First',
+        'Second',
+        'Third',
+        'Fourth',
+        'Fifth'
     ]
     x_pos = np.arange(len(labels))
 
@@ -93,5 +92,5 @@ def make_plot(data, file_name):
 
 
 if __name__ == "__main__":
-    data = get_data("d_ng_p", 1, "../benchmark-data/d_ng_p")
-    make_plot(data, "d_ng_p")
+    data = get_data("uk_ng_p", 5, "../benchmark-data/uk_ng_p")
+    make_plot(data, "uk_ng_p")
