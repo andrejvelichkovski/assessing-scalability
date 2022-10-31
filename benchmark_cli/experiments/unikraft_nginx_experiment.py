@@ -6,7 +6,7 @@ import logging as log
 from helpers.unikraft_helpers import run_unikraft
 
 EXPERIMENT_NAME = "uk_ng_s"
-INSTANCES = 50
+INSTANCES = 10
 
 def setup_network(ips_required):
     subprocess.run("sudo ip link set dev virbr0 down", shell=True)
@@ -21,9 +21,8 @@ def setup_network(ips_required):
     subprocess.run("sudo ip link set dev virbr0 up", shell=True)
 
 def run_wrk_benchmark(file_data, ip_address):
-    subprocess.Popen(
-        f"wrk -d 1m -c 30 -t 14 http://{ip_address}/ > {file_data}",
-        shell=True
+    os.system(
+        f"wrk -d 1m -c 30 -t 14 http://{ip_address}/ > {file_data}"
     )
 
 def run_unikraft_nginx_experiment(run_index):
@@ -51,11 +50,11 @@ def run_unikraft_nginx_experiment(run_index):
         name="nginx",
     )
     active_vms += 1
-    time.sleep(10)
+    time.sleep(25)
     log.info("Main VM started. Starting first wrk benchmark")
 
-    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}-{run_index}-data-single.out", ips[0])
-    time.sleep(100)
+    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", ips[0])
+    time.sleep(10)
     log.info("Benchmark finished. Continuing!")
 
     for i in range(5):
@@ -67,9 +66,9 @@ def run_unikraft_nginx_experiment(run_index):
             )
             active_vms += 1
 
-        time.sleep(10)
+        time.sleep(35)
         log.info(f"Started {INSTANCES} additional containers. Performing new benchmark now")
 
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}-{run_index}-data-{(i+1)*INSTANCES}.out", ips[0])
-        time.sleep(100)
+        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*INSTANCES}.out", ips[0])
+        time.sleep(10)
         log.info("Benchmark finished. Continuing!")

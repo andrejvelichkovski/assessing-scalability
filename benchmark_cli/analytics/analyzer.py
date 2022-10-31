@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 FILE_NAMES = {
     "uk_ng_s": [
         "data-single.out",
+        "data-10.out",
+        "data-20.out",
+        "data-30.out",
+        "data-40.out",
         "data-50.out",
-        "data-100.out",
-        "data-150.out",
-        "data-200.out",
-        "data-250.out",
     ],
     "d_ng_s": [
         "data-single.out",
@@ -65,11 +65,12 @@ def make_plot(data, file_name):
     std = np.std(data, axis=1)
 
     labels = [
-        'First',
-        'Second',
-        'Third',
-        'Fourth',
-        'Fifth'
+        'Single',
+        '10 VMs',
+        '20 VMs',
+        '30 VMs',
+        '40 VMs',
+        '50 VMs',
     ]
     x_pos = np.arange(len(labels))
 
@@ -83,7 +84,7 @@ def make_plot(data, file_name):
     ax.set_xticks(x_pos)
     ax.set_xticklabels(labels)
     ax.set_title('Comparison how docker performs under more active nginx containers')
-    # ax.yaxis.grid(True)
+    ax.yaxis.grid(True)
 
     # Save the figure and show
     plt.tight_layout()
@@ -92,5 +93,6 @@ def make_plot(data, file_name):
 
 
 if __name__ == "__main__":
-    data = get_data("uk_ng_p", 5, "../benchmark-data/uk_ng_p")
-    make_plot(data, "uk_ng_p")
+    data = get_data("uk_ng_s", 2, "../benchmark-data/uk_ng_s")
+    print(data)
+    make_plot(data, "uk_ng_s")
