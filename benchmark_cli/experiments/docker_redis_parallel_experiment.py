@@ -3,9 +3,10 @@ import subprocess
 import time
 
 from helpers.docker_helpers import create_container, start_container
+from helpers.redis_benchmark_helpers import run_redis_benchmark
 import logging as log
 
-EXPERIMENT_NAME = "d_ng_p"
+EXPERIMENT_NAME = "d_re_p"
 INSTANCES = 5
 
 log.basicConfig(
@@ -14,19 +15,12 @@ log.basicConfig(
 )
 
 
-def run_wrk_benchmark(file_data, ip_address, port):
-    subprocess.Popen(
-        f"wrk -d 1m -c 30 -t 14 http://{ip_address}:{port} > {file_data}",
-        shell=True
-    )
-
-
-def run_docker_nginx_parallel_experiment(run_index):
+def run_docker_redis_parallel_experiment(run_index):
     log.info("Starting containers")
 
     active_port = 8080
     for cont in range(INSTANCES):
-        container = create_container(80, active_port, "nginx-benchmark")
+        container = create_container(6379, active_port, "redis-benchmark")
         start_container(container)
         active_port += 1
 
@@ -35,7 +29,7 @@ def run_docker_nginx_parallel_experiment(run_index):
 
     port = 8080
     for i in range(INSTANCES):
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{i}.out", "localhost", port)
+        run_redis_benchmark("localhost", port, f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{i}.out")
         port += 1
-    time.sleep(70)
+    time.sleep(10)
     log.info("Benchmark finished. Continuing!")

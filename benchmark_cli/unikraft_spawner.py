@@ -26,9 +26,9 @@ def setup_network(ips_required):
 
 
 def unikraft_spawner(instances, name):
-    if instances % 10 != 0:
-        log.error("Invalid Input: Please enter instances as number divisible by 10")
-        exit()
+    # if instances % 10 != 0:
+    #     log.error("Invalid Input: Please enter instances as number divisible by 10")
+    #     exit()
 
     log.warning(f"Running this command will create {instances} Unikraft VMs without cleaning them!")
 
@@ -51,5 +51,5 @@ def unikraft_spawner(instances, name):
             active_vms += 1
 
             # Print benchmark progress
-            if active_vms % (instances // 10) == 0:
-                log.info(f"Benchmark progress: { (active_vms // (instances // 10)) * 10 }%")
+            # if active_vms % (instances // 10) == 0:
+            #     log.info(f"Benchmark progress: { (active_vms // (instances // 10)) * 10 }%")
