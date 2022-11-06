@@ -2,7 +2,11 @@
 
 Series of benchmark experiements will be performed with the end goal of assessing the scalability of lightweight virtualization systems. The key focus will be on Docker and Unikraft.
 
-## Microbenchmarks
+### Experiment codes
+
+Each experiment has a unique code which shortly describes what it is benchmarking. This code is used to specify which experiment to run through the experiment runner CLI tool. Some of the codes are: "d_ng_s", "uk_ng_s", "d_ng_p, ...
+
+# Microbenchmarks
 
 ### Measuring boot time
 
@@ -20,8 +24,26 @@ Measuring the boot time of Unikraft is slightly more complicated, as the Unikraf
 
 The simplest way of measuring memory usage is to observe the high level memory usage difference between running 0 and running 100 (or more general number X) instances.
 
-## Macrobenchmarks
+# Macrobenchmarks
 
-### Nginx benchmarks
+Macrobenchmarks are larger experiments which test more abstract behaviours, such as network fairness and performance under increased load.
 
-### Redis benchmarks
+## Nginx benchmarks
+
+### Single nginx benchmarking (d_ng_s and uk_ng_s)
+
+This experiment analyses how a single Docker and Unikraft instance performs when having many background instances active. We compare how it behaves when only it is running on the operating system, then how it behaves when having 50, 100, 150, or more instances running in the background.
+
+### Parallel nginx benchmarking (d_ng_p and uk_ng_p)
+
+This experiment compares how the benchmark results are split between several instances running. It is performed by launcing 5 (or more) instances of nginx and then launcing 5 (or more) benchmarking clients (wrk) in parallel.
+
+## Redis benchmarks
+
+### Single redis benchmarking (d_re_s and uk_re_s)
+
+This experiment is the same version to how the single nginx benchmark, but adapted for Redis.
+ 
+### Parallel redis benchmarking (d_re_p and uk_re_p)
+
+Similarly, to the above experiment, adapting the parallel benchmark for Redis.
