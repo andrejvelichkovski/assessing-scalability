@@ -36,7 +36,7 @@ FILE_NAMES = {
     "uk_ng_p": PARALLEL_FILES,
     "d_re_p": PARALLEL_FILES,
     "uk_re_p": PARALLEL_FILES,
-    "d_re_s": SINGLE_FILES_LARGE,
+    "d_re_s": SINGLE_FILES,
     "uk_re_s": SINGLE_FILES,
 }
 
@@ -129,7 +129,7 @@ def make_plot(data, experiment_name):
 
 
 if __name__ == "__main__":
-    exp_name = "d_re_s"
-    data = get_data(exp_name, 5, f"../benchmark-data/{exp_name}")
+    exp_name = "uk_re_s"
+    data = get_data(exp_name, 2, f"../benchmark-data/{exp_name}")
     print(data)
     make_plot(data, exp_name)
