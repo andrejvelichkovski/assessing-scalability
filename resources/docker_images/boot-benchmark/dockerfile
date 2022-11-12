@@ -1,0 +1,5 @@
+FROM gcc:latest
+COPY . .
+WORKDIR ./
+RUN gcc -o boot_time boot_time.c
+CMD ["./boot_time"]
