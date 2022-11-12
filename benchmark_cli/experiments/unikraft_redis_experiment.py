@@ -78,5 +78,5 @@ def run_unikraft_redis_experiment(run_index):
             6379,
             f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i + 1) * INSTANCES}.out"
         )
-        time.sleep(10)
+        time.sleep(35)
         log.info("Benchmark finished. Continuing!")

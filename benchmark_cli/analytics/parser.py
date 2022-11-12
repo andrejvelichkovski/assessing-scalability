@@ -33,7 +33,20 @@ def get_redis_benchmark_data(path):
     return benchmark_results["GET"]
 
 
+def get_unikraft_boot_benchmark_data(path):
+    uk_boot_file = open(path, "r")
+    content = uk_boot_file.readlines()
+
+    return int(content[-2])
+
+def get_docker_boot_benchmark_data(path):
+    docker_boot_file = open(path, "r")
+    content = docker_boot_file.readlines()
+
+    return int(content[1]) - int(content[0])
+
+
 if __name__ == "__main__":
     print(
-        get_redis_benchmark_data("../benchmark-data/uk_re_p/1-data-0.out")
+        get_docker_boot_benchmark_data("../benchmark-data/d_boot/1-data-single.out")
     )

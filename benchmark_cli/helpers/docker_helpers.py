@@ -4,6 +4,11 @@ import os
 docker_cli = APIClient(base_url="unix:///run/docker.sock")
 
 
+def create_container_static(image_name):
+    container = docker_cli.create_container(image=image_name)
+    return container
+
+
 def create_container(port_in, port_out, image_name):
     host_config = docker_cli.create_host_config(
         port_bindings={port_in: port_out}

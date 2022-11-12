@@ -1,4 +1,7 @@
-from analytics.parser import get_wrk_benchmark_data, get_redis_benchmark_data
+from analytics.parser import get_wrk_benchmark_data, \
+    get_redis_benchmark_data, \
+    get_unikraft_boot_benchmark_data, \
+    get_docker_boot_benchmark_data
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,6 +32,15 @@ SINGLE_FILES_LARGE = [
     "data-250.out",
 ]
 
+SINGLE_FILES_25 = [
+    "data-single.out",
+    "data-5.out",
+    "data-10.out",
+    "data-15.out",
+    "data-20.out",
+    "data-25.out",
+]
+
 FILE_NAMES = {
     "uk_ng_s": SINGLE_FILES,
     "d_ng_s": SINGLE_FILES,
@@ -38,6 +50,8 @@ FILE_NAMES = {
     "uk_re_p": PARALLEL_FILES,
     "d_re_s": SINGLE_FILES,
     "uk_re_s": SINGLE_FILES,
+    "uk_boot": SINGLE_FILES_25,
+    "d_boot": SINGLE_FILES_LARGE,
 }
 
 PARSER_TYPE = {
@@ -49,6 +63,8 @@ PARSER_TYPE = {
     "uk_re_p": get_redis_benchmark_data,
     "d_re_s": get_redis_benchmark_data,
     "uk_re_s": get_redis_benchmark_data,
+    "uk_boot": get_unikraft_boot_benchmark_data,
+    "d_boot": get_docker_boot_benchmark_data,
 }
 
 SINGLE_BENCHMARK_LABELS = [
@@ -77,6 +93,8 @@ FIGURE_LABELS = {
     "uk_re_p": PARALLEL_BENCHMARK_LABELS,
     "uk_re_s": SINGLE_BENCHMARK_LABELS,
     "d_re_s": SINGLE_BENCHMARK_LABELS,
+    "uk_boot": SINGLE_BENCHMARK_LABELS,
+    "d_boot": SINGLE_BENCHMARK_LABELS,
 }
 
 
@@ -129,7 +147,7 @@ def make_plot(data, experiment_name):
 
 
 if __name__ == "__main__":
-    exp_name = "uk_re_s"
-    data = get_data(exp_name, 2, f"../benchmark-data/{exp_name}")
+    exp_name = "d_boot"
+    data = get_data(exp_name, 5, f"../benchmark-data/{exp_name}")
     print(data)
     make_plot(data, exp_name)
