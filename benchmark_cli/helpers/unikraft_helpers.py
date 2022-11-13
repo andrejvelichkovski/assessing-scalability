@@ -2,6 +2,24 @@ import os
 import subprocess
 
 
+def setup_network(ips_required):
+    p = subprocess.run("sudo ip link set dev virbr0 down", shell=True)
+    p.wait()
+
+    p = subprocess.run("sudo ip link del dev virbr0", shell=True)
+    p.wait()
+
+    p = subprocess.run("sudo ip link add virbr0 type bridge", shell=True)
+    p.wait()
+    # subprocess.run("tc qdisc add dev virbr0 root netem delay 0ms", shell=True)
+
+    for i in range(ips_required):
+        p = subprocess.run(f"sudo ip address add 172.{16 + i}.0.1/24 dev virbr0", shell=True)
+        p.wait()
+
+    p = subprocess.run("sudo ip link set dev virbr0 up", shell=True)
+    p.wait()
+
 def _run_qemu(daemonize, display_option, path, kernel_name):
     command = f"""
         sudo qemu-system-x86_64 -kernel "{kernel_name}" \

@@ -1,29 +1,12 @@
-import os
-import subprocess
 import time
 import logging as log
 
-from helpers.unikraft_helpers import run_unikraft
+from helpers.unikraft_helpers import run_unikraft, setup_network
+from helpers.wrk_helpers import run_wrk_benchmark
 
 EXPERIMENT_NAME = "uk_ng_s"
 INSTANCES = 10
 
-def setup_network(ips_required):
-    subprocess.run("sudo ip link set dev virbr0 down", shell=True)
-    subprocess.run("sudo ip link del dev virbr0", shell=True)
-
-    subprocess.run("sudo ip link add virbr0 type bridge", shell=True)
-    # subprocess.run("tc qdisc add dev virbr0 root netem delay 0ms", shell=True)
-    
-    for i in range(ips_required):
-        subprocess.run(f"sudo ip address add 172.{16 + i}.0.1/24 dev virbr0", shell=True)
-
-    subprocess.run("sudo ip link set dev virbr0 up", shell=True)
-
-def run_wrk_benchmark(file_data, ip_address):
-    os.system(
-        f"wrk -d 1m -c 30 -t 14 http://{ip_address}/ > {file_data}"
-    )
 
 def run_unikraft_nginx_experiment(run_index):
     INSTANCES_PER_IP = 200

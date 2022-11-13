@@ -1,8 +1,7 @@
-import subprocess
-
 import time
 
 from helpers.docker_helpers import create_container, start_container
+from helpers.wrk_helpers import run_wrk_benchmark
 import logging as log
 
 EXPERIMENT_NAME = "d_ng_s"
@@ -12,13 +11,6 @@ log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
     format="%(levelname)s: %(message)s"
 )
-
-
-def run_wrk_benchmark(file_data, ip_address, port):
-    subprocess.Popen(
-        f"wrk -d 1m -c 30 -t 14 http://{ip_address}:{port} > {file_data}",
-        shell=True
-    )
 
 
 def run_docker_nginx_experiment(run_index):
@@ -32,7 +24,7 @@ def run_docker_nginx_experiment(run_index):
     time.sleep(2)
     log.info("Main container started. Starting first wrk benchmark")
 
-    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", "localhost", 8080)
+    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", "localhost:8080")
     time.sleep(100)
     log.info("Benchmark finished. Continuing!")
 
@@ -45,6 +37,6 @@ def run_docker_nginx_experiment(run_index):
         time.sleep(2)
         log.info(f"Started {INSTANCES} additional containers. Performing new benchmark now")
 
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*INSTANCES}.out", "localhost", 8080)
+        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*INSTANCES}.out", "localhost:8080")
         time.sleep(100)
         log.info("Benchmark finished. Continuing!")

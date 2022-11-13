@@ -1,31 +1,16 @@
-import os
-import subprocess
 import time
 import logging as log
 
-from helpers.unikraft_helpers import run_unikraft
+from helpers.unikraft_helpers import run_unikraft, setup_network
 from helpers.redis_benchmark_helpers import run_redis_benchmark
 
 EXPERIMENT_NAME = "uk_re_p"
 INSTANCES = 5
 
 
-def setup_network(ips_required):
-    subprocess.run("sudo ip link set dev virbr0 down", shell=True)
-    subprocess.run("sudo ip link del dev virbr0", shell=True)
-
-    subprocess.run("sudo ip link add virbr0 type bridge", shell=True)
-    # subprocess.run("tc qdisc add dev virbr0 root netem delay 0ms", shell=True)
-
-    for i in range(ips_required):
-        subprocess.run(f"sudo ip address add 172.{16 + i}.0.1/24 dev virbr0", shell=True)
-
-    subprocess.run("sudo ip link set dev virbr0 up", shell=True)
-
-
 def run_unikraft_redis_parallel_experiment(run_index):
     INSTANCES_PER_IP = 200
-    ips_required = ( INSTANCES + INSTANCES_PER_IP - 1) // INSTANCES_PER_IP
+    ips_required = (INSTANCES + INSTANCES_PER_IP - 1) // INSTANCES_PER_IP
 
     setup_network(ips_required)
     log.info("Network setup ready")
