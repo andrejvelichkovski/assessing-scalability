@@ -42,7 +42,7 @@ def _run_qemu_network(instance_cnt, ip_address, path, kernel_name, conf_file="")
             -netdev bridge,id=en0,br=virbr0 \
             -device virtio-net-pci,netdev=en0,mac=52:54:98:76:54:0{instance_cnt} \
             -kernel "{kernel_name}" \
-            -append "-M 1024 netdev.ipv4_addr={ip_address} netdev.ipv4_gw_addr=172.16.0.1 netdev.ipv4_subnet_mask=255.255.255.0 -- {conf_file}" \
+            -append "-M 20 netdev.ipv4_addr={ip_address} netdev.ipv4_gw_addr=172.16.0.1 netdev.ipv4_subnet_mask=255.255.255.0 -- {conf_file}" \
             -cpu host \
             -enable-kvm \
             -daemonize \

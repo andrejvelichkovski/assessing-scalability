@@ -46,7 +46,14 @@ def get_docker_boot_benchmark_data(path):
     return int(content[1]) - int(content[0])
 
 
+def get_chrono_benchmark_data(path):
+    chrono_file = open(path, "r")
+    content = chrono_file.readlines()
+
+    return int(content[0])
+
+
 if __name__ == "__main__":
     print(
-        get_docker_boot_benchmark_data("../benchmark-data/d_boot/1-data-single.out")
+        get_chrono_benchmark_data("../benchmark-data/uk_boot/1-data-single.out.chrono")
     )

@@ -5,11 +5,11 @@ from helpers.unikraft_helpers import _run_qemu
 
 def _run_qemu_nographic(file_out, path, kernel_name):
     command = f"""
-        sudo qemu-system-x86_64 -kernel "{kernel_name}" \
+        ../chrono/chronoquiet sudo qemu-system-x86_64 -kernel "{kernel_name}" \
             -enable-kvm \
             -cpu host \
             -display none \
-            -serial file:{file_out} \
+            -serial file:{file_out} > {file_out}.chrono
     """
 
     p = subprocess.Popen(command, shell=True, cwd=path)

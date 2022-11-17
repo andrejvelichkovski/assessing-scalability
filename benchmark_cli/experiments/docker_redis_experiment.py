@@ -1,5 +1,3 @@
-import subprocess
-
 import time
 
 from helpers.docker_helpers import create_container, start_container

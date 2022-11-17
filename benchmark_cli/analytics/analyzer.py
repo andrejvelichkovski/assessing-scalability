@@ -1,7 +1,8 @@
 from analytics.parser import get_wrk_benchmark_data, \
     get_redis_benchmark_data, \
     get_unikraft_boot_benchmark_data, \
-    get_docker_boot_benchmark_data
+    get_docker_boot_benchmark_data, \
+    get_chrono_benchmark_data
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,6 +42,15 @@ SINGLE_FILES_25 = [
     "data-25.out",
 ]
 
+SINGLE_FILES_25_CHRONO = [
+    "data-single.out.chrono",
+    "data-5.out.chrono",
+    "data-10.out.chrono",
+    "data-15.out.chrono",
+    "data-20.out.chrono",
+    "data-25.out.chrono",
+]
+
 FILE_NAMES = {
     "uk_ng_s": SINGLE_FILES,
     "d_ng_s": SINGLE_FILES,
@@ -52,6 +62,7 @@ FILE_NAMES = {
     "uk_re_s": SINGLE_FILES,
     "uk_boot": SINGLE_FILES_25,
     "d_boot": SINGLE_FILES_LARGE,
+    "uk_boot_chrono": SINGLE_FILES_25_CHRONO,
 }
 
 PARSER_TYPE = {
@@ -65,6 +76,7 @@ PARSER_TYPE = {
     "uk_re_s": get_redis_benchmark_data,
     "uk_boot": get_unikraft_boot_benchmark_data,
     "d_boot": get_docker_boot_benchmark_data,
+    "uk_boot_chrono": get_chrono_benchmark_data,
 }
 
 SINGLE_BENCHMARK_LABELS = [
@@ -146,8 +158,58 @@ def make_plot(data, experiment_name):
     print("done")
 
 
+def make_plot_double(data1, data2, experiment_name):
+    # Build the plot
+    fig, ax = plt.subplots()
+
+    fig.set_figheight(5)
+    fig.set_figwidth(8)
+
+    data1= np.array(data1)
+    means1 = np.mean(data1, axis=1)
+    std1 = np.std(data1, axis=1)
+
+    data2 = np.array(data2)
+    means2 = np.mean(data2, axis=1)
+    std2 = np.std(data2, axis=1)
+
+    labels = FIGURE_LABELS[experiment_name]
+    x_pos = np.arange(len(labels))
+
+    BAR_WIDTH = 0.35
+
+    ax.bar(x_pos, means1,
+           yerr=std1,
+           align='center',
+           alpha=0.5,
+           ecolor='black',
+           capsize=5)
+    ax.bar(x_pos+BAR_WIDTH, means2,
+           yerr=std2,
+           align='center',
+           alpha=0.5,
+           ecolor='black',
+           capsize=5)
+
+
+    ax.set_ylabel('Average wrk performance')
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(labels)
+    ax.set_title('Comparison how docker performs under more active nginx containers')
+    ax.yaxis.grid(True)
+
+    # Save the figure and show
+    plt.tight_layout()
+    plt.savefig(f"../figures/{experiment_name}")
+    print("done")
+
+
+
 if __name__ == "__main__":
-    exp_name = "d_boot"
-    data = get_data(exp_name, 5, f"../benchmark-data/{exp_name}")
-    print(data)
-    make_plot(data, exp_name)
+    exp_name = "uk_boot"
+    data1 = get_data(exp_name, 3, f"../benchmark-data/{exp_name}")
+    data2 = get_data("uk_boot_chrono", 3, "../benchmark-data/uk_boot")
+
+    print(data1)
+    print(data2)
+    make_plot(data1, exp_name)
