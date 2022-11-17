@@ -17,7 +17,7 @@ log.basicConfig(
 def run_docker_redis_experiment(run_index):
     active_port = 8080
 
-    container = create_container(6379, active_port, "redis")
+    container = create_container(6379, active_port, "redis-benchmark")
     start_container(container)
 
     active_port += 1
@@ -36,7 +36,7 @@ def run_docker_redis_experiment(run_index):
 
     for i in range(5):
         for cont in range(INSTANCES):
-            container = create_container(6379, active_port, "redis")
+            container = create_container(6379, active_port, "redis-benchmark")
             start_container(container)
             active_port += 1
 
