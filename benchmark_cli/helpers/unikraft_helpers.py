@@ -34,13 +34,16 @@ def _run_qemu(daemonize, display_option, path, kernel_name):
 
 
 def _run_qemu_network(instance_cnt, ip_address, path, kernel_name, conf_file=""):
-    # mac = 52:54: 98:76: 54:0{instance_cnt}
-    # TODO: refactor for smart MAC settings
+    mac_address_unformated = hex(instance_cnt)[2:].zfill(12)
+    mac_address = ":".join(
+        [mac_address_unformated[i * 2:(i + 1) * 2] for i in range(6)]
+    )
+
     command = f"""
         sudo qemu-system-x86_64 -fsdev local,id=myid,path=$(pwd)/fs0,security_model=none \
             -device virtio-9p-pci,fsdev=myid,mount_tag=fs0,disable-modern=on,disable-legacy=off \
             -netdev bridge,id=en0,br=virbr0 \
-            -device virtio-net-pci,netdev=en0,mac=52:54:98:76:54:0{instance_cnt} \
+            -device virtio-net-pci,netdev=en0,mac={mac_address} \
             -kernel "{kernel_name}" \
             -append "-M 20 netdev.ipv4_addr={ip_address} netdev.ipv4_gw_addr=172.16.0.1 netdev.ipv4_subnet_mask=255.255.255.0 -- {conf_file}" \
             -cpu host \
