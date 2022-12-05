@@ -6,7 +6,6 @@ from helpers.redis_benchmark_helpers import run_redis_benchmark
 import logging as log
 
 EXPERIMENT_NAME = "d_re_s"
-INSTANCES = 10
 
 log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
@@ -14,7 +13,7 @@ log.basicConfig(
 )
 
 
-def run_docker_redis_experiment(run_index):
+def run_docker_redis_experiment(run_index, benchmark_times, instances_per_benchmark):
     active_port = 8080
 
     container = create_container(6379, active_port, "redis-benchmark")
@@ -34,19 +33,19 @@ def run_docker_redis_experiment(run_index):
 
     log.info("Benchmark finished. Continuing!")
 
-    for i in range(5):
-        for cont in range(INSTANCES):
+    for i in range(benchmark_times):
+        for cont in range(instances_per_benchmark):
             container = create_container(6379, active_port, "redis-benchmark")
             start_container(container)
             active_port += 1
 
         time.sleep(2)
-        log.info(f"Started {INSTANCES} additional containers. Performing new benchmark now")
+        log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_redis_benchmark(
             "localhost",
             8080,
-            f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*INSTANCES}.out"
+            f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out"
         )
         time.sleep(10)
         log.info("Benchmark finished. Continuing!")

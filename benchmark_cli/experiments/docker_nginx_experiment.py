@@ -5,7 +5,6 @@ from helpers.wrk_helpers import run_wrk_benchmark
 import logging as log
 
 EXPERIMENT_NAME = "d_ng_s"
-INSTANCES = 10
 
 log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
@@ -13,7 +12,7 @@ log.basicConfig(
 )
 
 
-def run_docker_nginx_experiment(run_index):
+def run_docker_nginx_experiment(run_index, benchmark_times, instances_per_benchmark):
     active_port = 8080
 
     container = create_container(80, active_port, "nginx-benchmark")
@@ -25,18 +24,18 @@ def run_docker_nginx_experiment(run_index):
     log.info("Main container started. Starting first wrk benchmark")
 
     run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", "localhost:8080")
-    time.sleep(100)
+    time.sleep(10)
     log.info("Benchmark finished. Continuing!")
 
-    for i in range(5):
-        for cont in range(INSTANCES):
+    for i in range(benchmark_times):
+        for cont in range(instances_per_benchmark):
             container = create_container(80, active_port, "nginx-benchmark")
             start_container(container)
             active_port += 1
 
         time.sleep(2)
-        log.info(f"Started {INSTANCES} additional containers. Performing new benchmark now")
+        log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*INSTANCES}.out", "localhost:8080")
-        time.sleep(100)
+        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out", "localhost:8080")
+        time.sleep(10)
         log.info("Benchmark finished. Continuing!")
