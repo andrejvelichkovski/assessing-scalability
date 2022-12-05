@@ -27,10 +27,10 @@ def get_redis_benchmark_data(path):
         elif "GET" in line:
             request_type = "GET"
 
-        if "throughput summary:" in line:
-            benchmark_results[request_type] = float(line.split()[2])
+        if "requests per second" in line:
+            benchmark_results[request_type] = float(line.split()[0])
 
-    return benchmark_results["GET"]
+    return benchmark_results["SET"]
 
 
 def get_unikraft_boot_benchmark_data(path):
