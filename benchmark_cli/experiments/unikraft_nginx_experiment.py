@@ -1,6 +1,7 @@
 import time
 import logging as log
 
+from helpers.system_usage_helpers import measure_system_usage
 from helpers.unikraft_helpers import run_unikraft, setup_network
 from helpers.wrk_helpers import run_wrk_benchmark
 
@@ -36,6 +37,11 @@ def run_unikraft_nginx_experiment(run_index, benchmark_times, instances_per_benc
     log.info("Main VM started. Starting first wrk benchmark")
 
     run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", ips[0])
+    measure_system_usage(
+        f"benchmark-data/{EXPERIMENT_NAME}",
+        run_index,
+        "single",
+    )
     time.sleep(10)
     log.info("Benchmark finished. Continuing!")
 
@@ -53,6 +59,11 @@ def run_unikraft_nginx_experiment(run_index, benchmark_times, instances_per_benc
 
         run_wrk_benchmark(
             f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out", ips[0]
+        )
+        measure_system_usage(
+            f"benchmark-data/{EXPERIMENT_NAME}",
+            run_index,
+            (i+1)*instances_per_benchmark,
         )
         time.sleep(10)
         log.info("Benchmark finished. Continuing!")

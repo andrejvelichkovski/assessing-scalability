@@ -2,6 +2,7 @@ import time
 
 from helpers.docker_helpers import create_container, start_container
 from helpers.wrk_helpers import run_wrk_benchmark
+from helpers.system_usage_helpers import measure_system_usage
 import logging as log
 
 EXPERIMENT_NAME = "d_ng_s"
@@ -24,6 +25,11 @@ def run_docker_nginx_experiment(run_index, benchmark_times, instances_per_benchm
     log.info("Main container started. Starting first wrk benchmark")
 
     run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out", "localhost:8080")
+    measure_system_usage(
+        f"benchmark-data/{EXPERIMENT_NAME}",
+        run_index,
+        "single",
+    )
     time.sleep(10)
     log.info("Benchmark finished. Continuing!")
 
@@ -36,6 +42,14 @@ def run_docker_nginx_experiment(run_index, benchmark_times, instances_per_benchm
         time.sleep(2)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out", "localhost:8080")
+        run_wrk_benchmark(
+            f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out",
+            "localhost:8080"
+        )
+        measure_system_usage(
+            f"benchmark-data/{EXPERIMENT_NAME}",
+            run_index,
+            (i+1)*instances_per_benchmark,
+        )
         time.sleep(10)
         log.info("Benchmark finished. Continuing!")

@@ -1,6 +1,7 @@
 import time
 import logging as log
 
+from helpers.system_usage_helpers import measure_system_usage
 from helpers.unikraft_helpers import run_unikraft
 from helpers.unikraft_benchmark_helpers import run_unikraft_boot_benchmark_instance
 
@@ -9,6 +10,11 @@ EXPERIMENT_NAME = "uk_boot"
 
 def run_unikraft_boot_experiment(run_index, benchmark_times, instances_per_benchmark):
     run_unikraft_boot_benchmark_instance(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out")
+    measure_system_usage(
+        f"benchmark-data/{EXPERIMENT_NAME}",
+        run_index,
+        "single",
+    )
     log.info("Finished first boot benchmark")
 
     for i in range(benchmark_times):
@@ -24,6 +30,11 @@ def run_unikraft_boot_experiment(run_index, benchmark_times, instances_per_bench
 
         run_unikraft_boot_benchmark_instance(
             f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out"
+        )
+        measure_system_usage(
+            f"benchmark-data/{EXPERIMENT_NAME}",
+            run_index,
+            (i+1)*instances_per_benchmark,
         )
         time.sleep(5)
         log.info("Benchmark finished. Continuing!")
