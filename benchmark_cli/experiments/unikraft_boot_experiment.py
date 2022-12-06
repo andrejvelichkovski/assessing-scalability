@@ -25,16 +25,19 @@ def run_unikraft_boot_experiment(run_index, benchmark_times, instances_per_bench
                 name="sleeping",
             )
 
-        time.sleep(5)
+        time.sleep(instances_per_benchmark)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_unikraft_boot_benchmark_instance(
             f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i+1)*instances_per_benchmark}.out"
         )
+        # Possibly the QEMU might detach the previous VM slightly earlier
+        # to avoid race-condition we wait a few seconds before monitoring
+        # the system usage
+        time.sleep(5)
         measure_system_usage(
             f"benchmark-data/{EXPERIMENT_NAME}",
             run_index,
             (i+1)*instances_per_benchmark,
         )
-        time.sleep(5)
         log.info("Benchmark finished. Continuing!")

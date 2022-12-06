@@ -26,7 +26,7 @@ def run_docker_boot_experiment(run_index, benchmark_times, instances_per_benchma
             container = create_container_static("sleep-container")
             start_container(container)
 
-        time.sleep(10)
+        time.sleep(instances_per_benchmark)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_docker_boot_benchmark(
