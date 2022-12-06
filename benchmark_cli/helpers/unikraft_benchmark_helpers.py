@@ -17,11 +17,11 @@ def _run_qemu_nographic(file_out, path, kernel_name):
 
 
 def run_unikraft_boot_benchmark_instance(file_name):
-    pwd = os.getcwd() + "/unikraft-boot-benchmark/"
+    pwd = os.getcwd() + "/unikraft-images/"
     os.environ["UK_WORKDIR"] = pwd
 
     _run_qemu_nographic(
         file_out=f"../{file_name}",
         path=pwd,
-        kernel_name="build/helloworld_kvm-x86_64",
+        kernel_name="get_rdtsc_kvm-x86_64",
     )
