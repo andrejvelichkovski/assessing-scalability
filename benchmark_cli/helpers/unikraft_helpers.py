@@ -56,7 +56,7 @@ def _run_qemu_network(instance_cnt, ip_address, path, kernel_name, conf_file="")
 
 
 def _prepare_redis_conf_file(ip_address, instance_cnt):
-    conf_file = open(f"./unikraft-redis/apps/app-redis/fs0/redis{instance_cnt}.conf", "w")
+    conf_file = open(f"./workdir/apps/app-redis/fs0/redis{instance_cnt}.conf", "w")
     conf_file.write(f"bind {ip_address}\n")
     conf_file.write("port 6379\n")
     conf_file.write("tcp-backlog 511\n")
@@ -67,7 +67,7 @@ def _prepare_redis_conf_file(ip_address, instance_cnt):
 
 def _run_redis_instance(ip_address, instance_cnt):
     pwd = os.getcwd()
-    redis_pwd = pwd + "/unikraft-redis/apps/app-redis"
+    redis_pwd = pwd + "/workdir/apps/app-redis"
     os.environ["UK_WORKDIR"] = redis_pwd + "/../../"
 
     _prepare_redis_conf_file(ip_address, instance_cnt)
@@ -82,7 +82,7 @@ def _run_redis_instance(ip_address, instance_cnt):
 
 def _run_nginx_instance(ip_address, instance_cnt):
     pwd = os.getcwd()
-    nginx_pwd = pwd + "/unikraft-nginx/apps/app-nginx"
+    nginx_pwd = pwd + "/workdir/apps/app-nginx"
     os.environ["UK_WORKDIR"] = nginx_pwd + "/../../"
 
     _run_qemu_network(
@@ -94,14 +94,14 @@ def _run_nginx_instance(ip_address, instance_cnt):
 
 
 def _run_sleeping_instance():
-    pwd = os.getcwd() + "/unikraft-sleeping/"
+    pwd = os.getcwd() + "/unikraft-images/"
     os.environ["UK_WORKDIR"] = pwd
 
     _run_qemu(
         daemonize=True,
         display_option="-display none",
         path=pwd,
-        kernel_name="build/helloworld_kvm-x86_64",
+        kernel_name="sleeping_noprint_kvm-x86_64",
     )
 
 
