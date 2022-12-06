@@ -1,6 +1,6 @@
 import time
 
-from helpers.docker_helpers import create_container, start_container
+from helpers.docker_helpers import create_container, start_container, create_container_static
 from helpers.redis_benchmark_helpers import run_redis_benchmark
 
 import logging as log
@@ -42,11 +42,12 @@ def run_docker_redis_experiment(run_index, benchmark_times, instances_per_benchm
 
     for i in range(benchmark_times):
         for cont in range(instances_per_benchmark):
-            container = create_container(6379, active_port, "redis-benchmark")
+            # container = create_container(6379, active_port, "redis-benchmark")
+            container = create_container_static("sleep-container")
             start_container(container)
-            active_port += 1
+            # active_port += 1
 
-        time.sleep(2)
+        time.sleep(instances_per_benchmark)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_redis_benchmark(

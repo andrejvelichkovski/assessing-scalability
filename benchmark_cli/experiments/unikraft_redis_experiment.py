@@ -49,19 +49,19 @@ def run_unikraft_redis_experiment(run_index, benchmark_times, instances_per_benc
         run_index,
         "single",
     )
-    time.sleep(10)
+    time.sleep(15)
     log.info("Benchmark finished. Continuing!")
 
     for i in range(benchmark_times):
         for unikernel in range(instances_per_benchmark):
             run_unikraft(
-                ip_address=ips[active_vms],
-                instance_cnt=active_vms + 1,
-                name="redis",
+                ip_address=None,
+                instance_cnt=None,
+                name="sleeping",
             )
             active_vms += 1
 
-        time.sleep(35)
+        time.sleep(instances_per_benchmark)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_redis_benchmark(
@@ -74,5 +74,5 @@ def run_unikraft_redis_experiment(run_index, benchmark_times, instances_per_benc
             run_index,
             (i+1)*instances_per_benchmark,
         )
-        time.sleep(35)
+        time.sleep(10)
         log.info("Benchmark finished. Continuing!")
