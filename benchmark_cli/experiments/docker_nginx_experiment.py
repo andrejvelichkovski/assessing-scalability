@@ -39,7 +39,7 @@ def run_docker_nginx_experiment(run_index, benchmark_times, instances_per_benchm
             start_container(container)
             active_port += 1
 
-        time.sleep(2)
+        time.sleep(instances_per_benchmark)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_wrk_benchmark(

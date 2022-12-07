@@ -54,7 +54,7 @@ def run_unikraft_nginx_experiment(run_index, benchmark_times, instances_per_benc
             )
             active_vms += 1
 
-        time.sleep(35)
+        time.sleep(instances_per_benchmark)
         log.info(f"Started {instances_per_benchmark} additional containers. Performing new benchmark now")
 
         run_wrk_benchmark(
