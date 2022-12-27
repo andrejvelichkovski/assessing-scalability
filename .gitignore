@@ -3,7 +3,9 @@ benchmark_cli/unikraft-redis
 benchmark_cli/unikraft-sqlite
 benchmark_cli/venv
 benchmark_cli/fio
+benchmark_cli/workdir
 **/benchmark_cli/deactivate
 **/benchmark_cli/scripts
 microbenchmarks
 **/__pycache__/
+/benchmark_cli/old_unikraft_images/
