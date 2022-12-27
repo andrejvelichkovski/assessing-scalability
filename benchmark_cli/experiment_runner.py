@@ -8,6 +8,8 @@ from experiments.docker_redis_experiment import run_docker_redis_experiment
 from experiments.unikraft_redis_experiment import run_unikraft_redis_experiment
 from experiments.unikraft_boot_experiment import run_unikraft_boot_experiment
 from experiments.docker_boot_experiment import run_docker_boot_experiment
+from experiments.unikraft_cpu_parallel_experiment import run_unikraft_cpu_parallel_experiment
+from experiments.docker_cpu_parallel_experiment import run_docker_cpu_parallel_experiment
 from helpers.docker_helpers import clean_all_containers
 from helpers.unikraft_helpers import clean_all_vms
 import logging as log
@@ -29,6 +31,9 @@ EXPERIMENT_NAMES = [
     # Boot experiments
     "uk_boot",
     "d_boot",
+    # CPU performance experiments
+    "uk_cpu_p",
+    "d_cpu_p",
 ]
 
 log.basicConfig(
@@ -102,14 +107,20 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
         run_unikraft_boot_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "d_boot":
         run_docker_boot_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "uk_cpu_p":
+        run_unikraft_cpu_parallel_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "d_cpu_p":
+        run_docker_cpu_parallel_experiment(ind, benchmark_times, instances_per_benchmark)
 
 
 def clean_experiment(name):
-    if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot"]:
+    if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot", "d_cpu_p"]:
         clean_all_containers()
-    elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot"]:
+    elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot", "uk_cpu_p"]:
         clean_all_vms()
         time.sleep(30)
+    else:
+        log.error("Error: benchmark data not cleaned after run")
 
 
 if __name__ == "__main__":
