@@ -29,7 +29,20 @@ def run_unikraft_boot_benchmark_instance(file_name):
         file_out=f"../{file_name}",
         path=pwd,
         kernel_name="get_rdtsc_kvm-x86_64",
-        core=0,
+        core=-1,
+        wait_to_complete=True,
+    )
+
+
+def run_unikraft_sqlite_benchmark_instance(file_name):
+    pwd = os.getcwd() + "/unikraft-images/"
+    os.environ["UK_WORKDIR"] = pwd
+
+    _run_qemu_nographic(
+        file_out=f"../{file_name}",
+        path=pwd,
+        kernel_name="sqlite_kvm-x86_64",
+        core=-1,
         wait_to_complete=True,
     )
 

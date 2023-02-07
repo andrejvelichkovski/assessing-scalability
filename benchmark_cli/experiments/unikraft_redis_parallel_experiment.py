@@ -2,10 +2,12 @@ import time
 import logging as log
 
 from helpers.unikraft_helpers import run_unikraft, setup_network
-from helpers.redis_benchmark_helpers import run_redis_benchmark
+from helpers.redis_benchmark_helpers import run_redis_benchmark, get_redis_benchmark_process
 
-EXPERIMENT_NAME = "uk_re_p"
-INSTANCES = 5
+EXPERIMENT_NAME = "uk_re_p_tmp"
+INSTANCES = 128
+RUN_BENCHMARK_PLACES = [1, 2, 4, 8, 16, 32, 64, 128]
+WAIT_BETWEEN_INSTANCES = 2
 
 
 def run_unikraft_redis_parallel_experiment(run_index):
@@ -28,19 +30,29 @@ def run_unikraft_redis_parallel_experiment(run_index):
 
     active_vms = 0
 
-    for unikernel in range(INSTANCES):
+    for unikernel in range(1, INSTANCES+1):
         run_unikraft(
             ip_address=ips[active_vms],
             instance_cnt=active_vms + 1,
             name="redis",
         )
         active_vms += 1
+        time.sleep(WAIT_BETWEEN_INSTANCES)
 
-    time.sleep(50)
-    log.info(f"Started {INSTANCES} unikernels. Performing benchmark now")
+        if unikernel in RUN_BENCHMARK_PLACES:
+            log.info(f"Started {unikernel} unikernels in total. Performing benchmarks now")
+            benchmark_processes = []
+            for i in range(unikernel):
+                benchmark_processes.append(
+                    get_redis_benchmark_process(
+                        ips[i],
+                        6379,
+                        f"benchmark-data/{EXPERIMENT_NAME}/{unikernel}-data-{i}.out"
+                    )
+                )
 
-    for i in range(INSTANCES):
-        run_redis_benchmark(ips[i], 6379, f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{i}.out")
+            for p in benchmark_processes:
+                p.wait()
 
-    time.sleep(15)
+    time.sleep(5)
     log.info("Benchmark finished. Continuing!")

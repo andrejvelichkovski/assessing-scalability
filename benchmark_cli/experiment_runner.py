@@ -10,6 +10,7 @@ from experiments.unikraft_boot_experiment import run_unikraft_boot_experiment
 from experiments.docker_boot_experiment import run_docker_boot_experiment
 from experiments.unikraft_cpu_parallel_experiment import run_unikraft_cpu_parallel_experiment
 from experiments.docker_cpu_parallel_experiment import run_docker_cpu_parallel_experiment
+from experiments.unikraft_sqlite_experiment import run_unikraft_sqlite_experiment
 from helpers.docker_helpers import clean_all_containers
 from helpers.unikraft_helpers import clean_all_vms
 import logging as log
@@ -34,6 +35,8 @@ EXPERIMENT_NAMES = [
     # CPU performance experiments
     "uk_cpu_p",
     "d_cpu_p",
+    # SQLITE performance experiments
+    "uk_sql_s",
 ]
 
 log.basicConfig(
@@ -111,12 +114,14 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
         run_unikraft_cpu_parallel_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "d_cpu_p":
         run_docker_cpu_parallel_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "uk_sql_s":
+        run_unikraft_sqlite_experiment(ind, benchmark_times, instances_per_benchmark)
 
 
 def clean_experiment(name):
     if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot", "d_cpu_p"]:
         clean_all_containers()
-    elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot", "uk_cpu_p"]:
+    elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot", "uk_cpu_p", "uk_sql_s"]:
         clean_all_vms()
         time.sleep(30)
     else:
