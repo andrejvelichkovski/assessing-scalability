@@ -1,6 +1,7 @@
 import time
 import logging as log
 
+from helpers.system_usage_helpers import measure_system_usage
 from helpers.unikraft_benchmark_helpers import run_unikraft_sqlite_benchmark_instance
 from helpers.unikraft_helpers import run_unikraft
 
@@ -29,6 +30,12 @@ def run_unikraft_sqlite_experiment(run_index, benchmark_times, instances_per_ben
         run_unikraft_sqlite_benchmark_instance(
             f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{(i + 1) * instances_per_benchmark}.out"
         )
+        measure_system_usage(
+            f"benchmark-data/{EXPERIMENT_NAME}",
+            run_index,
+            (i+1)*instances_per_benchmark,
+        )
+        time.sleep(10)
 
         time.sleep(3)
         log.info("Benchmark finished. Continuing!")
