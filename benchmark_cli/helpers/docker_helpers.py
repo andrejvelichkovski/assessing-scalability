@@ -1,7 +1,25 @@
+import subprocess
+
 from docker import APIClient
 import os
 
 docker_cli = APIClient(base_url="unix:///run/docker.sock")
+
+
+def create_container_taskset_static(taskset_text, image_name):
+    command = f"""
+            sudo {taskset_text} docker run -d {image_name}
+        """
+    p = subprocess.Popen(command, shell=True)
+    p.wait()
+
+
+def create_container_taskset(port_in, port_out, taskset_text, image_name):
+    command = f"""
+            sudo {taskset_text} docker run -d -p {port_out}:{port_in} {image_name}
+        """
+    p = subprocess.Popen(command, shell=True)
+    p.wait()
 
 
 def create_container_static(image_name):

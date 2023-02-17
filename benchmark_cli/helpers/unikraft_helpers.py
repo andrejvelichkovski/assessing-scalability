@@ -20,9 +20,9 @@ def setup_network(ips_required):
     p = subprocess.run("sudo ip link set dev virbr0 up", shell=True)
     # p.wait()
 
-def _run_qemu(daemonize, display_option, path, kernel_name):
+def _run_qemu(daemonize, display_option, path, kernel_name, taskset_text=""):
     command = f"""
-        sudo qemu-system-x86_64 -kernel "{kernel_name}" \
+        sudo {taskset_text} qemu-system-x86_64 -kernel "{kernel_name}" \
             -enable-kvm \
             -cpu host \
             -daemonize \
@@ -33,14 +33,14 @@ def _run_qemu(daemonize, display_option, path, kernel_name):
     p.wait()
 
 
-def _run_qemu_network(instance_cnt, ip_address, path, kernel_name, conf_file=""):
+def _run_qemu_network(instance_cnt, ip_address, path, kernel_name, conf_file="", taskset_text=""):
     mac_address_unformated = hex(instance_cnt)[2:].zfill(12)
     mac_address = ":".join(
         [mac_address_unformated[i * 2:(i + 1) * 2] for i in range(6)]
     )
 
     command = f"""
-        sudo qemu-system-x86_64 -fsdev local,id=myid,path=$(pwd)/fs0,security_model=none \
+        sudo {taskset_text} qemu-system-x86_64 -fsdev local,id=myid,path=$(pwd)/fs0,security_model=none \
             -device virtio-9p-pci,fsdev=myid,mount_tag=fs0,disable-modern=on,disable-legacy=off \
             -netdev bridge,id=en0,br=virbr0 \
             -device virtio-net-pci,netdev=en0,mac={mac_address} \
@@ -65,7 +65,7 @@ def _prepare_redis_conf_file(ip_address, instance_cnt):
     conf_file.close()
 
 
-def _run_redis_instance(ip_address, instance_cnt):
+def _run_redis_instance(ip_address, instance_cnt, taskset_text=""):
     pwd = os.getcwd()
     redis_pwd = pwd + "/old_unikraft_images/unikraft-redis/apps/app-redis"
     os.environ["UK_WORKDIR"] = redis_pwd + "/../../"
@@ -78,10 +78,11 @@ def _run_redis_instance(ip_address, instance_cnt):
         path=redis_pwd,
         kernel_name="build/redis_kvm-x86_64",
         conf_file=f"/redis{instance_cnt}.conf",
+        taskset_text=taskset_text,
     )
 
 
-def _run_nginx_instance(ip_address, instance_cnt):
+def _run_nginx_instance(ip_address, instance_cnt, taskset_text=""):
     pwd = os.getcwd()
     nginx_pwd = pwd + "/workdir/apps/app-nginx"
     os.environ["UK_WORKDIR"] = nginx_pwd + "/../../"
@@ -91,6 +92,7 @@ def _run_nginx_instance(ip_address, instance_cnt):
         ip_address=ip_address,
         path=nginx_pwd,
         kernel_name="build/nginx_kvm-x86_64",
+        taskset_text=taskset_text,
     )
 
 
@@ -106,13 +108,28 @@ def _run_sleeping_instance():
     )
 
 
-def run_unikraft(ip_address, instance_cnt, name):
+def _run_busy_instance(taskset_text=""):
+    pwd = os.getcwd() + "/unikraft-images/"
+    os.environ["UK_WORKDIR"] = pwd
+
+    _run_qemu(
+        daemonize=True,
+        display_option="-display none",
+        path=pwd,
+        kernel_name="busy_kvm-x86_64",
+        taskset_text=taskset_text
+    )
+
+
+def run_unikraft(ip_address, instance_cnt, name, taskset_text=""):
     if name == "nginx":
-        _run_nginx_instance(ip_address, instance_cnt)
+        _run_nginx_instance(ip_address, instance_cnt, taskset_text)
     elif name == "redis":
-        _run_redis_instance(ip_address, instance_cnt)
+        _run_redis_instance(ip_address, instance_cnt, taskset_text)
     elif name == "sleeping":
         _run_sleeping_instance()
+    elif name == "busy":
+        _run_busy_instance(taskset_text)
 
 
 def clean_all_vms():
