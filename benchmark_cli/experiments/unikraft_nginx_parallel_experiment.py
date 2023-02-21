@@ -2,15 +2,17 @@ import time
 import logging as log
 
 from helpers.unikraft_helpers import run_unikraft, setup_network
-from helpers.wrk_helpers import run_wrk_benchmark
+from helpers.wrk_helpers import get_wrk_benchmark_process
 
-EXPERIMENT_NAME = "uk_ng_p"
-INSTANCES = 5
+EXPERIMENT_NAME = "uk_ng_p_tmp"
+INSTANCES = 128
+RUN_BENCHMARK_PLACES = [1, 2, 4, 8, 16, 32, 64, 128]
+WAIT_BETWEEN_INSTANCES = 2
 
 
 def run_unikraft_nginx_parallel_experiment(run_index):
     INSTANCES_PER_IP = 200
-    ips_required = ( INSTANCES + INSTANCES_PER_IP - 1) // INSTANCES_PER_IP
+    ips_required = (INSTANCES + INSTANCES_PER_IP - 1) // INSTANCES_PER_IP
 
     setup_network(ips_required)
     log.info("Network setup ready")
@@ -28,19 +30,28 @@ def run_unikraft_nginx_parallel_experiment(run_index):
 
     active_vms = 0
 
-    for unikernel in range(INSTANCES):
+    for unikernel in range(1, INSTANCES+1):
         run_unikraft(
             ip_address=ips[active_vms],
             instance_cnt=active_vms + 1,
             name="nginx",
         )
         active_vms += 1
+        time.sleep(WAIT_BETWEEN_INSTANCES)
 
-    time.sleep(50)
-    log.info(f"Started {INSTANCES} unikernels. Performing benchmark now")
+        if unikernel in RUN_BENCHMARK_PLACES:
+            log.info(f"Started {unikernel} unikernels in total. Performing benchmarks now")
+            benchmark_processes = []
+            for i in range(unikernel):
+                benchmark_processes.append(
+                    get_wrk_benchmark_process(
+                        f"benchmark-data/{EXPERIMENT_NAME}/{unikernel}-data-{i}.out",
+                        ips[i],
+                    )
+                )
 
-    for i in range(INSTANCES):
-        run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-{i}.out", ips[i])
+            for p in benchmark_processes:
+                p.wait()
 
-    time.sleep(100)
+    time.sleep(5)
     log.info("Benchmark finished. Continuing!")
