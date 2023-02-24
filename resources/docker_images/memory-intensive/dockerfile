@@ -1,0 +1,5 @@
+FROM gcc:latest
+COPY . .
+WORKDIR ./
+RUN gcc -o stream stream.c
+CMD ["./stream"]
