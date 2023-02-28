@@ -1,0 +1,5 @@
+FROM gcc:latest
+COPY . .
+WORKDIR ./
+RUN gcc -o read-attack main.c
+CMD ["./read-attack"]

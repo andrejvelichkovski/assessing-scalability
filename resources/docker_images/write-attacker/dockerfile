@@ -1,0 +1,5 @@
+FROM gcc:latest
+COPY . .
+WORKDIR ./
+RUN gcc -o write-attack main.c
+CMD ["./write-attack"]
