@@ -1,5 +1,6 @@
 from experiments.docker_nginx_experiment import run_docker_nginx_experiment
 from experiments.docker_nginx_parallel_experiment import run_docker_nginx_parallel_experiment
+from experiments.performance_isolation.docker_sqlite_perf_iso import run_docker_sqlite_perf_iso_experiment
 from experiments.performance_isolation.docker_nginx_perf_iso import run_docker_nginx_perf_iso_experiment
 from experiments.unikraft_nginx_experiment import run_unikraft_nginx_experiment
 from experiments.unikraft_nginx_parallel_experiment import run_unikraft_nginx_parallel_experiment
@@ -15,6 +16,7 @@ from experiments.unikraft_sqlite_experiment import run_unikraft_sqlite_experimen
 from experiments.performance_isolation.unikraft_nginx_perf_iso import run_unikraft_nginx_perf_iso_experiment
 from experiments.performance_isolation.docker_redis_perf_iso import run_docker_redis_perf_iso_experiment
 from experiments.performance_isolation.unikraft_redis_perf_iso import run_unikraft_redis_perf_iso_experiment
+from experiments.performance_isolation.unikraft_sqlite_perf_iso import run_unikraft_sqlite_perf_iso_experiment
 from helpers.docker_helpers import clean_all_containers
 from helpers.unikraft_helpers import clean_all_vms
 import logging as log
@@ -46,6 +48,8 @@ EXPERIMENT_NAMES = [
     "d_nginx_perf_iso",
     "d_redis_perf_iso",
     "uk_redis_perf_iso",
+    "uk_sqlite_perf_iso",
+    "d_sqlite_perf_iso",
 ]
 
 log.basicConfig(
@@ -133,13 +137,18 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
         run_docker_redis_perf_iso_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "uk_redis_perf_iso":
         run_unikraft_redis_perf_iso_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "uk_sqlite_perf_iso":
+        run_unikraft_sqlite_perf_iso_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "d_sqlite_perf_iso":
+        run_docker_sqlite_perf_iso_experiment(ind, benchmark_times, instances_per_benchmark)
 
 
 def clean_experiment(name):
-    if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot", "d_cpu_p", "d_nginx_perf_iso", "d_redis_perf_iso"]:
+    if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot", "d_cpu_p", "d_nginx_perf_iso", "d_redis_perf_iso",
+                "d_sqlite_perf_iso"]:
         clean_all_containers()
     elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot",
-                  "uk_cpu_p", "uk_sql_s", "uk_nginx_perf_iso", "uk_redis_perf_iso"]:
+                  "uk_cpu_p", "uk_sql_s", "uk_nginx_perf_iso", "uk_redis_perf_iso", "uk_sqlite_perf_iso"]:
         clean_all_vms()
         time.sleep(30)
     else:

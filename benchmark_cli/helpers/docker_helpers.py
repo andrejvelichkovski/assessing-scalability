@@ -7,16 +7,18 @@ docker_cli = APIClient(base_url="unix:///run/docker.sock")
 
 
 def create_container_taskset_static(taskset_text, image_name):
+    core_val = taskset_text[8:]
     command = f"""
-            sudo {taskset_text} docker run -d {image_name}
+            sudo {taskset_text} docker run -d --cpuset-cpus "{core_val}" {image_name}
         """
     p = subprocess.Popen(command, shell=True)
     p.wait()
 
 
 def create_container_taskset(port_in, port_out, taskset_text, image_name):
+    core_val = taskset_text[8:]
     command = f"""
-            sudo {taskset_text} docker run -d -p {port_out}:{port_in} {image_name}
+            sudo {taskset_text} docker run -d --cpuset-cpus "{core_val}" -p {port_out}:{port_in} {image_name}
         """
     p = subprocess.Popen(command, shell=True)
     p.wait()
