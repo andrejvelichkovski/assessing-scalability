@@ -8,19 +8,21 @@ from helpers.unikraft_helpers import run_unikraft, clean_all_vms
 
 EXPERIMENT_NAME = "d_sqlite_perf_iso"
 
-CORE1_ID = 1
-CORE2_ID = 2
-
+SAME_CORE = 1
 ATTACKER_NAME = "read_attack"
 
 
-def run_two_containers(core_1, core_2, file_name, run_index):
+def run_two_containers(core_1, core_2, file_name, run_index, attack):
     print(EXPERIMENT_NAME)
     taskset_text = ""
     if core_2 != -1:
         taskset_text=f"taskset {core_2}"
 
-    create_container_taskset_static(image_name="write-attacker", taskset_text=taskset_text)
+    create_container_taskset_static(
+        image_name=attack,
+        taskset_text=taskset_text,
+        tmpfs="--mount type=tmpfs,destination=/app",
+    )
 
     time.sleep(20)
 
@@ -34,25 +36,13 @@ def run_two_containers(core_1, core_2, file_name, run_index):
 def run_docker_sqlite_perf_iso_experiment(run_index, benchmark_times, instances_per_benchmark):
     run_docker_sqlite_benchmark(
         file_name=f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-single.out",
-        core=-1,
+        core=SAME_CORE,
         wait_to_complete=True
     )
     time.sleep(10)
     log.info("Single SQLite benchmark completed")
 
-    log.info("Running benchmark with automatic scheduling")
-
-    run_two_containers(-1, -1, "auto", run_index)
-    clean_all_containers()
-    time.sleep(10)
-
-    log.info("Running benchmark on same core, separate threads")
-
-    run_two_containers(1, 2, "diff-thread", run_index)
-    clean_all_containers()
-    time.sleep(10)
-
     log.info("Running benchmark on same core, same thread")
 
-    run_two_containers(1, 1, "same-thread", run_index)
+    run_two_containers(SAME_CORE, SAME_CORE, "same-thread", run_index, ATTACKER_NAME)
     log.info("Benchmark completed")
