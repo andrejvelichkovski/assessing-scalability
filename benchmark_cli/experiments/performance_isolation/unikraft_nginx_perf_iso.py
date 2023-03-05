@@ -1,14 +1,12 @@
 import time
 import logging as log
 
-from helpers.unikraft_benchmark_helpers import run_unikraft_cpu_benchmark_instance
 from helpers.unikraft_helpers import setup_network, run_unikraft, clean_all_vms
 from helpers.wrk_helpers import run_wrk_benchmark
 
 EXPERIMENT_NAME = "uk_nginx_perf_iso"
-
-CORE1_ID = 1
-CORE2_ID = 2
+SAME_CORE = 1
+BUSY_VM_NAME = "busy"
 
 
 def run_two_unikrafts(taskset_1, taskset_2, file_name, run_index):
@@ -22,7 +20,7 @@ def run_two_unikrafts(taskset_1, taskset_2, file_name, run_index):
     run_unikraft(
         ip_address=None,
         instance_cnt=None,
-        name="busy",
+        name=BUSY_VM_NAME,
         taskset_text=taskset_2,
     )
     time.sleep(25)
@@ -38,7 +36,7 @@ def run_unikraft_nginx_perf_iso_experiment(run_index, benchmark_times, instances
         ip_address="172.16.0.2",
         instance_cnt=1,
         name="nginx",
-        taskset_text="",
+        taskset_text=f"taskset {SAME_CORE}",
     )
 
     time.sleep(25)
@@ -50,20 +48,5 @@ def run_unikraft_nginx_perf_iso_experiment(run_index, benchmark_times, instances
     clean_all_vms()
     time.sleep(10)
 
-    log.info("Running benchmark with automatic scheduling")
-
-    run_two_unikrafts("" "", "auto", run_index)
-    clean_all_vms()
-    time.sleep(10)
-
-
-    log.info("Running benchmark on same core, separate threads")
-
-    run_two_unikrafts("taskset 1", "taskset 2", "diff-thread", run_index)
-    clean_all_vms()
-    time.sleep(10)
-
-    log.info("Running benchmark on same core, same thread")
-
-    run_two_unikrafts("taskset 1", "taskset 1", "same-thread", run_index)
+    run_two_unikrafts(f"taskset {SAME_CORE}", f"taskset {SAME_CORE}", "same-thread", run_index)
     log.info("Benchmark completed")

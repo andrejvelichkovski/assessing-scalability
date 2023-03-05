@@ -121,6 +121,19 @@ def _run_busy_instance(taskset_text=""):
     )
 
 
+def _run_stream_instance(taskset_text=""):
+    pwd = os.getcwd() + "/unikraft-images/"
+    os.environ["UK_WORKDIR"] = pwd
+
+    _run_qemu(
+        daemonize=True,
+        display_option="-display none",
+        path=pwd,
+        kernel_name="stream_busy_kvm-x86_64",
+        taskset_text=taskset_text
+    )
+
+
 def _run_read_attack_instance(taskset_text=""):
     pwd = os.getcwd() + "/unikraft-images/"
     os.environ["UK_WORKDIR"] = pwd
@@ -156,6 +169,8 @@ def run_unikraft(ip_address, instance_cnt, name, taskset_text=""):
         _run_sleeping_instance()
     elif name == "busy":
         _run_busy_instance(taskset_text)
+    elif name == "stream":
+        _run_stream_instance(taskset_text)
     elif name == "read_attack":
         _run_read_attack_instance(taskset_text)
     elif name == "write_attack":
