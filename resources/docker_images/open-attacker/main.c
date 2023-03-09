@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	   	
 	   	fclose(fp);
 	   	
-	   	printf("Step\n");
+//	   	printf("Step\n");
 	}
 	return 0;
 }
