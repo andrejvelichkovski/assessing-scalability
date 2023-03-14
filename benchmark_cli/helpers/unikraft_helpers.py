@@ -160,6 +160,19 @@ def _run_open_attack_instance(taskset_text=""):
     )
 
 
+def _run_stat_attack_instance(taskset_text=""):
+    pwd = os.getcwd() + "/unikraft-images/"
+    os.environ["UK_WORKDIR"] = pwd
+
+    _run_qemu(
+        daemonize=True,
+        display_option="-display none",
+        path=pwd,
+        kernel_name="stat_attack_kvm-x86_64",
+        taskset_text=taskset_text
+    )
+
+
 def _run_write_attack_instance(taskset_text=""):
     pwd = os.getcwd() + "/unikraft-images/"
     os.environ["UK_WORKDIR"] = pwd
@@ -190,6 +203,8 @@ def run_unikraft(ip_address, instance_cnt, name, taskset_text=""):
         _run_write_attack_instance(taskset_text)
     elif name == "open_attack":
         _run_open_attack_instance(taskset_text)
+    elif name == "stat_attack":
+        _run_stat_attack_instance(taskset_text)
 
 
 def clean_all_vms():
