@@ -1,0 +1,5 @@
+FROM gcc:latest
+COPY . .
+WORKDIR ./
+RUN gcc -O2 -o stat-attack main.c
+CMD ["./stat-attack"]
