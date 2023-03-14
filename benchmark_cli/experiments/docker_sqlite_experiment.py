@@ -15,7 +15,7 @@ log.basicConfig(
 )
 
 
-def run_docker_redis_experiment(run_index, benchmark_times, instances_per_benchmark):
+def run_docker_sqlite_experiment(run_index, benchmark_times, instances_per_benchmark):
     run_docker_sqlite_benchmark(
         file_name=f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-data-single.out",
         core=-1,

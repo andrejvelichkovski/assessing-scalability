@@ -1,5 +1,6 @@
 from experiments.docker_nginx_experiment import run_docker_nginx_experiment
 from experiments.docker_nginx_parallel_experiment import run_docker_nginx_parallel_experiment
+from experiments.docker_sqlite_experiment import run_docker_sqlite_experiment
 from experiments.performance_isolation.docker_sqlite_perf_iso import run_docker_sqlite_perf_iso_experiment
 from experiments.performance_isolation.docker_nginx_perf_iso import run_docker_nginx_perf_iso_experiment
 from experiments.unikraft_nginx_experiment import run_unikraft_nginx_experiment
@@ -43,6 +44,7 @@ EXPERIMENT_NAMES = [
     "d_cpu_p",
     # SQLITE performance experiments
     "uk_sql_s",
+    "d_sql_s",
     # Performance isolation experiments
     "uk_nginx_perf_iso",
     "d_nginx_perf_iso",
@@ -129,6 +131,8 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
         run_docker_cpu_parallel_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "uk_sql_s":
         run_unikraft_sqlite_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "d_sql_s":
+        run_docker_sqlite_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "uk_nginx_perf_iso":
         run_unikraft_nginx_perf_iso_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "d_nginx_perf_iso":
@@ -145,7 +149,7 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
 
 def clean_experiment(name):
     if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot", "d_cpu_p", "d_nginx_perf_iso", "d_redis_perf_iso",
-                "d_sqlite_perf_iso"]:
+                "d_sqlite_perf_iso", "d_sql_s"]:
         clean_all_containers()
     elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot",
                   "uk_cpu_p", "uk_sql_s", "uk_nginx_perf_iso", "uk_redis_perf_iso", "uk_sqlite_perf_iso"]:
