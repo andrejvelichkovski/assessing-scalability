@@ -186,11 +186,27 @@ def _run_write_attack_instance(taskset_text=""):
     )
 
 
+def _run_httpreply_instance(ip_address, instance_cnt, taskset_text):
+    pwd = os.getcwd()
+    server_pwd = pwd + "/workdir/apps/app-httpreply"
+    os.environ["UK_WORKDIR"] = server_pwd + "/../../"
+
+    _run_qemu_network(
+        instance_cnt=instance_cnt,
+        ip_address=ip_address,
+        path=server_pwd,
+        kernel_name="build/httpreply_kvm-x86_64",
+        taskset_text=taskset_text,
+    )
+
+
 def run_unikraft(ip_address, instance_cnt, name, taskset_text=""):
     if name == "nginx":
         _run_nginx_instance(ip_address, instance_cnt, taskset_text)
     elif name == "redis":
         _run_redis_instance(ip_address, instance_cnt, taskset_text)
+    elif name == "httpreply_attack":
+        _run_httpreply_instance(ip_address, instance_cnt, taskset_text)
     elif name == "sleeping":
         _run_sleeping_instance()
     elif name == "busy":

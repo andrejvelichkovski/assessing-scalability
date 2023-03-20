@@ -2,7 +2,7 @@ import time
 import logging as log
 
 from helpers.unikraft_helpers import setup_network, run_unikraft, clean_all_vms
-from helpers.wrk_helpers import run_wrk_benchmark
+from helpers.wrk_helpers import run_wrk_benchmark, network_stress_attacker
 
 EXPERIMENT_NAME = "uk_nginx_perf_iso"
 SAME_CORE = 1
@@ -28,7 +28,7 @@ def run_two_unikrafts(taskset_1, taskset_2, file_name, run_index):
 
 
 def run_unikraft_nginx_perf_iso_experiment(run_index, benchmark_times, instances_per_benchmark):
-    ips_required = 1
+    ips_required = 2
     setup_network(ips_required)
     log.info("Network setup ready")
 
@@ -45,8 +45,16 @@ def run_unikraft_nginx_perf_iso_experiment(run_index, benchmark_times, instances
     run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-single.out", "172.16.0.2")
     log.info("Single run completed")
 
-    clean_all_vms()
+    run_unikraft(
+        ip_address="172.16.0.3",
+        instance_cnt=2,
+        name="httpreply_attack",
+        taskset_text=f"taskset {SAME_CORE}",
+    )
+
     time.sleep(10)
 
-    run_two_unikrafts(f"taskset {SAME_CORE}", f"taskset {SAME_CORE}", "same-thread", run_index)
+    network_stress_attacker(ip_address="172.16.0.3:8123", sleep_time=25)
+    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-single.out", "172.16.0.2")
+
     log.info("Benchmark completed")
