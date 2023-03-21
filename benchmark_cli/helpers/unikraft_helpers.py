@@ -200,6 +200,21 @@ def _run_httpreply_instance(ip_address, instance_cnt, taskset_text):
     )
 
 
+def _run_fork_bomb_instance(taskset_text):
+    pwd = os.getcwd()
+    print(pwd)
+    command = f"""
+        sudo {taskset_text} qemu-system-x86_64 -kernel "/boot/vmlinuz-$(uname -r)" \
+            -initrd ../resources/common/fork-bomb/initrd \
+            -m 1G \
+            -daemonize \
+            -display none 
+    """
+
+    p = subprocess.Popen(command, shell=True)
+    p.wait()
+
+
 def run_unikraft(ip_address, instance_cnt, name, taskset_text=""):
     if name == "nginx":
         _run_nginx_instance(ip_address, instance_cnt, taskset_text)
@@ -221,6 +236,8 @@ def run_unikraft(ip_address, instance_cnt, name, taskset_text=""):
         _run_open_attack_instance(taskset_text)
     elif name == "stat_attack":
         _run_stat_attack_instance(taskset_text)
+    elif name == "fork_bomb":
+        _run_fork_bomb_instance(taskset_text)
 
 
 def clean_all_vms():

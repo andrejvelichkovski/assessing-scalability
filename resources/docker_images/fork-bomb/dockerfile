@@ -1,0 +1,5 @@
+FROM gcc:latest
+COPY . .
+WORKDIR ./
+RUN gcc -O2 -o fork-bomb fork-bomb.c
+CMD ["./fork-bomb"]
