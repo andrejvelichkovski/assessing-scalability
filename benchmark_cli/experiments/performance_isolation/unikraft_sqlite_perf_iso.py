@@ -15,7 +15,7 @@ CORE_85 = "0x2000000000000000000000"  # Same CPU as hyperthread 27
 CORE_15 = "0x8000"  # Different CPU node
 
 
-def run_two_unikrafts(core_1, core_2, file_name, run_index, attack):
+def run_two_unikrafts(core_1, core_2, file_name, run_index, attack, instances_per_benchmark):
     taskset_text = ""
     if core_2 != -1:
         taskset_text=f"taskset {core_2}"
@@ -26,37 +26,65 @@ def run_two_unikrafts(core_1, core_2, file_name, run_index, attack):
         name=attack,
         taskset_text=taskset_text,
     )
-    time.sleep(25)
+    time.sleep(5)
 
-    run_unikraft_sqlite_benchmark_instance(
-        f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-{file_name}.out", core_1
-    )
+    for i in range(instances_per_benchmark):
+        run_unikraft_sqlite_benchmark_instance(
+            f"benchmark-data/{EXPERIMENT_NAME}/{run_index * instances_per_benchmark + i}-{file_name}.out", core_1
+        )
+        time.sleep(1)
+
+    clean_all_vms()
+    time.sleep(5)
 
 
 def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instances_per_benchmark):
-    run_unikraft_sqlite_benchmark_instance(
-        f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-single.out", SAME_CORE
+    for i in range(instances_per_benchmark):
+        run_unikraft_sqlite_benchmark_instance(
+            f"benchmark-data/{EXPERIMENT_NAME}/{run_index*instances_per_benchmark + i}-single.out", CORE_27
+        )
+        time.sleep(1)
+
+    log.info("Single run completed")
+
+    run_two_unikrafts(
+        core_1=CORE_27,
+        core_2=CORE_27,
+        run_index=run_index,
+        file_name="same-thread",
+        instances_per_benchmark=instances_per_benchmark
     )
 
-    time.sleep(10)
-    log.info("Single SQLite benchmark completed")
+    log.info("Same thread run completed")
 
-    log.info("Running benchmark on same core, same thread")
+    run_two_unikrafts(
+        core_1=CORE_27,
+        core_2=CORE_79,
+        run_index=run_index,
+        file_name="same-core",
+        instances_per_benchmark=instances_per_benchmark
+    )
 
-    run_two_unikrafts(CORE_27, CORE_27, "same-thread", run_index, ATTACKER_NAME)
-    clean_all_vms()
-    time.sleep(5)
+    log.info("Same core run completed")
 
-    run_two_unikrafts(CORE_79, CORE_27, "diff-thread", run_index, ATTACKER_NAME)
-    clean_all_vms()
-    time.sleep(5)
+    run_two_unikrafts(
+        core_1=CORE_27,
+        core_2=CORE_85,
+        run_index=run_index,
+        file_name="same-cpu",
+        instances_per_benchmark=instances_per_benchmark
+    )
 
-    run_two_unikrafts(CORE_85, CORE_27, "diff-core", run_index, ATTACKER_NAME)
-    clean_all_vms()
-    time.sleep(5)
+    log.info("Same CPU run completed")
 
-    run_two_unikrafts(CORE_15, CORE_27, "diff-cpu", run_index, ATTACKER_NAME)
-    clean_all_vms()
-    time.sleep(5)
+    run_two_unikrafts(
+        core_1=CORE_27,
+        core_2=CORE_15,
+        run_index=run_index,
+        file_name="same-machine",
+        instances_per_benchmark=instances_per_benchmark
+    )
+
+    log.info("Same machine run completed")
 
     log.info("Benchmark completed")
