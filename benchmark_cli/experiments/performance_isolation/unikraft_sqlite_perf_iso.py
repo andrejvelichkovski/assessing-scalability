@@ -47,15 +47,15 @@ def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instance
     clean_all_vms()
     time.sleep(5)
 
-    run_two_unikrafts(CORE_27, CORE_79, "diff-thread", run_index, ATTACKER_NAME)
+    run_two_unikrafts(CORE_79, CORE_27, "diff-thread", run_index, ATTACKER_NAME)
     clean_all_vms()
     time.sleep(5)
 
-    run_two_unikrafts(CORE_27, CORE_85, "diff-core", run_index, ATTACKER_NAME)
+    run_two_unikrafts(CORE_85, CORE_27, "diff-core", run_index, ATTACKER_NAME)
     clean_all_vms()
     time.sleep(5)
 
-    run_two_unikrafts(CORE_27, CORE_15, "diff-cpu", run_index, ATTACKER_NAME)
+    run_two_unikrafts(CORE_15, CORE_27, "diff-cpu", run_index, ATTACKER_NAME)
     clean_all_vms()
     time.sleep(5)
 
