@@ -30,7 +30,7 @@ def run_two_unikrafts(core_1, core_2, file_name, run_index, attack, instances_pe
 
     for i in range(instances_per_benchmark):
         run_unikraft_sqlite_benchmark_instance(
-            f"benchmark-data/{EXPERIMENT_NAME}/{run_index * instances_per_benchmark + i}-{file_name}.out", core_1
+            f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1) * instances_per_benchmark + i}-{file_name}.out", core_1
         )
         time.sleep(1)
 
@@ -52,7 +52,8 @@ def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instance
         core_2=CORE_27,
         run_index=run_index,
         file_name="same-thread",
-        instances_per_benchmark=instances_per_benchmark
+        instances_per_benchmark=instances_per_benchmark,
+        attack=ATTACKER_NAME,
     )
 
     log.info("Same thread run completed")
@@ -62,7 +63,8 @@ def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instance
         core_2=CORE_79,
         run_index=run_index,
         file_name="same-core",
-        instances_per_benchmark=instances_per_benchmark
+        instances_per_benchmark=instances_per_benchmark,
+        attack=ATTACKER_NAME,
     )
 
     log.info("Same core run completed")
@@ -72,7 +74,8 @@ def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instance
         core_2=CORE_85,
         run_index=run_index,
         file_name="same-cpu",
-        instances_per_benchmark=instances_per_benchmark
+        instances_per_benchmark=instances_per_benchmark,
+        attack=ATTACKER_NAME,
     )
 
     log.info("Same CPU run completed")
@@ -82,7 +85,8 @@ def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instance
         core_2=CORE_15,
         run_index=run_index,
         file_name="same-machine",
-        instances_per_benchmark=instances_per_benchmark
+        instances_per_benchmark=instances_per_benchmark,
+        attack=ATTACKER_NAME,
     )
 
     log.info("Same machine run completed")
