@@ -55,9 +55,9 @@ def run_unikraft_redis_experiment(run_index, benchmark_times, instances_per_benc
     for i in range(benchmark_times):
         for unikernel in range(instances_per_benchmark):
             run_unikraft(
-                ip_address=None,
-                instance_cnt=None,
-                name="sleeping",
+                ip_address=ips[active_vms],
+                instance_cnt=active_vms+1,
+                name="redis",
             )
             active_vms += 1
 

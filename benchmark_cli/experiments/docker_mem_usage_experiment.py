@@ -5,7 +5,7 @@ from helpers.docker_benchmark_helpers import run_docker_boot_benchmark
 from helpers.system_usage_helpers import measure_system_usage
 import logging as log
 
-EXPERIMENT_NAME = "d_boot"
+EXPERIMENT_NAME = "d_mem"
 
 log.basicConfig(
     level=log.INFO, filename="/dev/stdout",
@@ -13,7 +13,7 @@ log.basicConfig(
 )
 
 
-def run_docker_boot_experiment(run_index, benchmark_times, instances_per_benchmark):
+def run_docker_mem_experiment(run_index, benchmark_times, instances_per_benchmark):
     container = create_container_static("sleep-container")
     start_container(container)
 

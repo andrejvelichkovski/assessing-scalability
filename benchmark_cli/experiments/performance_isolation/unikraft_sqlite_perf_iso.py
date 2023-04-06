@@ -4,9 +4,9 @@ import logging as log
 from helpers.unikraft_benchmark_helpers import run_unikraft_sqlite_benchmark_instance
 from helpers.unikraft_helpers import run_unikraft, clean_all_vms
 
-EXPERIMENT_NAME = "uk_sqlite_perf_iso_fork"
+EXPERIMENT_NAME = "uk_sqlite_perf_iso_mem"
 
-ATTACKER_NAME = "fork_bomb"
+ATTACKER_NAME = "stream"
 SAME_CORE = 1
 
 CORE_27 = "0x8000000"
@@ -29,6 +29,7 @@ def run_two_unikrafts(core_1, core_2, file_name, run_index, attack, instances_pe
     time.sleep(5)
 
     for i in range(instances_per_benchmark):
+        print(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1) * instances_per_benchmark + i}-{file_name}.out")
         run_unikraft_sqlite_benchmark_instance(
             f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1) * instances_per_benchmark + i}-{file_name}.out", core_1
         )
@@ -39,9 +40,43 @@ def run_two_unikrafts(core_1, core_2, file_name, run_index, attack, instances_pe
 
 
 def run_unikraft_sqlite_perf_iso_experiment(run_index, benchmark_times, instances_per_benchmark):
+    
+    for i in range(26, 52):
+        if i == 27:
+            continue
+
+        run_unikraft(
+            ip_address=None,
+            instance_cnt=None,
+            name=ATTACKER_NAME,
+            taskset_text=f"taskset {hex(2**i)}",
+        )
+
+        run_unikraft(
+            ip_address=None,
+            instance_cnt=None,
+            name=ATTACKER_NAME,
+            taskset_text=f"taskset {hex(2**(52+i))}"
+        )
+        time.sleep(2)
+    
+    time.sleep(30)
+    log.info("attackers ready")
+    
     for i in range(instances_per_benchmark):
+        print(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1)*instances_per_benchmark + i}-large.out")
         run_unikraft_sqlite_benchmark_instance(
-            f"benchmark-data/{EXPERIMENT_NAME}/{run_index*instances_per_benchmark + i}-single.out", CORE_27
+            f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1)*instances_per_benchmark + i}-large.out", CORE_27
+        )
+        time.sleep(1)
+
+    log.info("finished")
+    return
+
+    for i in range(instances_per_benchmark):
+        print(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1)*instances_per_benchmark + i}-single.out")
+        run_unikraft_sqlite_benchmark_instance(
+            f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1)*instances_per_benchmark + i}-single.out", CORE_27
         )
         time.sleep(1)
 

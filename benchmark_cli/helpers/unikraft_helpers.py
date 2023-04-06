@@ -84,7 +84,7 @@ def _run_redis_instance(ip_address, instance_cnt, taskset_text=""):
 
 def _run_nginx_instance(ip_address, instance_cnt, taskset_text=""):
     pwd = os.getcwd()
-    nginx_pwd = pwd + "/workdir/apps/app-nginx"
+    nginx_pwd = pwd + "/old_unikraft_images/unikraft-nginx/apps/app-nginx"
     os.environ["UK_WORKDIR"] = nginx_pwd + "/../../"
 
     _run_qemu_network(

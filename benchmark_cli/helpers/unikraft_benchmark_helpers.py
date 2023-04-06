@@ -24,14 +24,18 @@ def _run_qemu_nographic(file_out, path, kernel_name, core, wait_to_complete=True
 def run_unikraft_boot_benchmark_instance(file_name):
     pwd = os.getcwd() + "/unikraft-images/"
     os.environ["UK_WORKDIR"] = pwd
+    
 
-    _run_qemu_nographic(
-        file_out=f"../{file_name}",
-        path=pwd,
-        kernel_name="get_rdtsc_kvm-x86_64",
-        core=-1,
-        wait_to_complete=True,
-    )
+    command = f"""
+        sudo ../chrono/chronoquiet qemu-system-x86_64 -kernel "get_rdtsc_kvm-x86_64" \
+            -enable-kvm \
+            -cpu host \
+            -display none \
+            -serial file:../{file_name} > ../{file_name}.chrono
+    """
+
+    p = subprocess.Popen(command, shell=True, cwd=pwd)
+    p.wait()
 
 
 def run_unikraft_sqlite_benchmark_instance(file_name, core=-1):

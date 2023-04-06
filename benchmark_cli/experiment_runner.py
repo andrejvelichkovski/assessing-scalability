@@ -14,6 +14,8 @@ from experiments.docker_boot_experiment import run_docker_boot_experiment
 from experiments.unikraft_cpu_parallel_experiment import run_unikraft_cpu_parallel_experiment
 from experiments.docker_cpu_parallel_experiment import run_docker_cpu_parallel_experiment
 from experiments.unikraft_sqlite_experiment import run_unikraft_sqlite_experiment
+from experiments.docker_mem_usage_experiment import run_docker_mem_experiment
+from experiments.unikraft_mem_usage_experiment import run_unikraft_mem_experiment
 from experiments.performance_isolation.unikraft_nginx_perf_iso import run_unikraft_nginx_perf_iso_experiment
 from experiments.performance_isolation.docker_redis_perf_iso import run_docker_redis_perf_iso_experiment
 from experiments.performance_isolation.unikraft_redis_perf_iso import run_unikraft_redis_perf_iso_experiment
@@ -45,6 +47,9 @@ EXPERIMENT_NAMES = [
     # SQLITE performance experiments
     "uk_sql_s",
     "d_sql_s",
+    # Mem usage experiment
+    "d_mem",
+    "uk_mem",
     # Performance isolation experiments
     "uk_nginx_perf_iso",
     "d_nginx_perf_iso",
@@ -125,6 +130,10 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
         run_unikraft_boot_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "d_boot":
         run_docker_boot_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "d_mem":
+        run_docker_mem_experiment(ind, benchmark_times, instances_per_benchmark)
+    elif name == "uk_mem":
+        run_unikraft_mem_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "uk_cpu_p":
         run_unikraft_cpu_parallel_experiment(ind, benchmark_times, instances_per_benchmark)
     elif name == "d_cpu_p":
@@ -149,12 +158,13 @@ def run_experiment(name, ind, benchmark_times, instances_per_benchmark):
 
 def clean_experiment(name):
     if name in ["d_ng_s", "d_ng_p", "d_re_p", "d_re_s", "d_boot", "d_cpu_p", "d_nginx_perf_iso", "d_redis_perf_iso",
-                "d_sqlite_perf_iso", "d_sql_s"]:
+                "d_sqlite_perf_iso", "d_sql_s", "d_mem"]:
         clean_all_containers()
     elif name in ["uk_ng_s", "uk_ng_p", "uk_re_p", "uk_re_s", "uk_boot",
-                  "uk_cpu_p", "uk_sql_s", "uk_nginx_perf_iso", "uk_redis_perf_iso", "uk_sqlite_perf_iso"]:
+                  "uk_cpu_p", "uk_sql_s", "uk_nginx_perf_iso", "uk_redis_perf_iso", "uk_sqlite_perf_iso",
+                  "uk_mem"]:
         clean_all_vms()
-        time.sleep(30)
+        time.sleep(60)
     else:
         log.error("Error: benchmark data not cleaned after run")
 

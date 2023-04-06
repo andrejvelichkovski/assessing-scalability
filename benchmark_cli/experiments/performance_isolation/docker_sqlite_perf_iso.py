@@ -6,14 +6,14 @@ from helpers.docker_helpers import create_container_taskset_static, clean_all_co
 from helpers.unikraft_benchmark_helpers import run_unikraft_sqlite_benchmark_instance
 from helpers.unikraft_helpers import run_unikraft, clean_all_vms
 
-EXPERIMENT_NAME = "d_sqlite_perf_iso"
+EXPERIMENT_NAME = "d_sqlite_perf_iso_fork"
 
 MAIN_CORE = 27
 SAME_CORE = 79
 SAME_CPU = 85
 SAME_MACHINE = 15
 
-ATTACKER_NAME = "read_attack"
+ATTACKER_NAME = "fork-attacker"
 
 
 def run_two_containers(core_1, core_2, file_name, run_index, attack, instances_per_benchmark):
@@ -31,6 +31,7 @@ def run_two_containers(core_1, core_2, file_name, run_index, attack, instances_p
     time.sleep(10)
 
     for i in range(instances_per_benchmark):
+        print(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-{file_name}.out")
         run_docker_sqlite_benchmark(
             file_name=f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-{file_name}.out",
             core=core_1,
@@ -43,7 +44,37 @@ def run_two_containers(core_1, core_2, file_name, run_index, attack, instances_p
 
 
 def run_docker_sqlite_perf_iso_experiment(run_index, benchmark_times, instances_per_benchmark):
+    for i in range(26,52):
+        if i == 27:
+            continue
+        create_container_taskset_static(
+            image_name=ATTACKER_NAME,
+            taskset_text=f"taskset {i}",
+            tmpfs="--mount type=tmpfs,destination=/app",
+        )
+
+        create_container_taskset_static(
+            image_name=ATTACKER_NAME,
+            taskset_text=f"taskset {52+i}",
+            tmpfs="--mount type=tmpfs,destination=/app",
+        )
+
+        time.sleep(3)
+    log.info("attackers ready")
+    
     for i in range(instances_per_benchmark):
+        print(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-large.out")
+        run_docker_sqlite_benchmark(
+            file_name=f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-large.out",
+            core=MAIN_CORE,
+            wait_to_complete=True,
+        )
+        time.sleep(1)
+
+
+    return
+    for i in range(instances_per_benchmark):
+        print(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-single.out")
         run_docker_sqlite_benchmark(
             file_name=f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-single.out",
             core=MAIN_CORE,
@@ -53,8 +84,12 @@ def run_docker_sqlite_perf_iso_experiment(run_index, benchmark_times, instances_
 
     log.info("Single SQLite benchmark completed")
 
-    run_two_containers(MAIN_CORE, SAME_CORE, "same-thread", run_index, ATTACKER_NAME, instances_per_benchmark)
+    run_two_containers(MAIN_CORE, MAIN_CORE, "same-thread", run_index, ATTACKER_NAME, instances_per_benchmark)
+    log.info("Same thread benchmark completed")
+
+    run_two_containers(MAIN_CORE, SAME_CORE, "same-core", run_index, ATTACKER_NAME, instances_per_benchmark)
     log.info("Same core benchmark completed")
+
 
     run_two_containers(MAIN_CORE, SAME_CPU, "same-cpu", run_index, ATTACKER_NAME, instances_per_benchmark)
     log.info("Same CPU benchmark completed")
