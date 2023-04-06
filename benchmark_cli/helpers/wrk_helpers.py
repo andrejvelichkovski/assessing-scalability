@@ -2,7 +2,7 @@ import os
 import subprocess
 import time
 
-PARAMETERS = "-d 20s -c 30 -t 14"
+PARAMETERS = "-d 10s -c 30 -t 14"
 
 def run_wrk_benchmark(file_data, ip_address):
     os.system(

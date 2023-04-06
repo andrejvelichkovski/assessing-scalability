@@ -8,8 +8,13 @@ EXPERIMENT_NAME = "uk_nginx_perf_iso"
 SAME_CORE = 1
 BUSY_VM_NAME = "busy"
 
+CORE_27 = "0x8000000"
+CORE_79 = "0x80000000000000000000"  # Same Core as hyperthread 27
+CORE_85 = "0x2000000000000000000000"  # Same CPU as hyperthread 27
+CORE_15 = "0x8000"  # Different CPU node
 
-def run_two_unikrafts(taskset_1, taskset_2, file_name, run_index):
+
+def run_two_unikrafts(taskset_1, taskset_2, file_name, run_index, instances_per_benchmark):
     run_unikraft(
         ip_address="172.16.0.2",
         instance_cnt=1,
@@ -23,8 +28,15 @@ def run_two_unikrafts(taskset_1, taskset_2, file_name, run_index):
         name=BUSY_VM_NAME,
         taskset_text=taskset_2,
     )
-    time.sleep(25)
-    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-{file_name}.out", "172.16.0.2")
+    time.sleep(5)
+
+    for i in range(instances_per_benchmark):
+        log.info(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1)*instances_per_benchmark + i}-{file_name}.out")
+        run_wrk_benchmark(
+            f"benchmark-data/{EXPERIMENT_NAME}/{(run_index-1)*instances_per_benchmark + i}-{file_name}.out",
+            "172.16.0.2"
+        )
+        time.sleep(1)
 
 
 def run_unikraft_nginx_perf_iso_experiment(run_index, benchmark_times, instances_per_benchmark):
@@ -42,19 +54,26 @@ def run_unikraft_nginx_perf_iso_experiment(run_index, benchmark_times, instances
     time.sleep(25)
     log.info("Main VM started. Starting first wrk benchmark")
 
-    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-single.out", "172.16.0.2")
+    for i in range(instances_per_benchmark):
+        log.info(f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-single.out")
+        run_wrk_benchmark(
+            f"benchmark-data/{EXPERIMENT_NAME}/{(run_index - 1) * instances_per_benchmark + i}-single.out",
+            "172.16.0.2"
+        )
+        time.sleep(1)
+
     log.info("Single run completed")
+    clean_all_vms()
+    time.sleep(5)
 
-    run_unikraft(
-        ip_address="172.16.0.3",
-        instance_cnt=2,
-        name="httpreply_attack",
-        taskset_text=f"taskset {SAME_CORE}",
-    )
+    run_two_unikrafts(f"taskset {CORE_27}", f"taskset {CORE_27}", "same-thread", run_index, instances_per_benchmark)
+    clean_all_vms()
+    time.sleep(5)
 
-    time.sleep(10)
+    log.info("same thread finished")
 
-    network_stress_attacker(ip_address="172.16.0.3:8123", sleep_time=25)
-    run_wrk_benchmark(f"benchmark-data/{EXPERIMENT_NAME}/{run_index}-single.out", "172.16.0.2")
+    run_two_unikrafts(f"taskset {CORE_27}", f"taskset {CORE_79}", "same-core", run_index, instances_per_benchmark)
+    clean_all_vms()
+    time.sleep(5)
 
     log.info("Benchmark completed")
